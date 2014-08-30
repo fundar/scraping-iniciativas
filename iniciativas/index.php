@@ -21,9 +21,8 @@ $iniciativas = array();
 if(is_array($explode) and count($explode) > 1) {
 	unset($explode[0]);
 
-	#recorremos el array
+	#recorremos el array de los grupos
 	foreach($explode as $value) {
-		//~ 
 		#obtenemos la fecha en que se publico la inicitava haciendo un explode de font donde termina el titulo rojo
 		$fecha_array   = explode('</font>', $value);
 		
@@ -51,7 +50,7 @@ if(is_array($explode) and count($explode) > 1) {
 				
 				#si no es nulo el elemento
 				if(!is_null($elementos[1])) {
-					#obtenes el titulo separado por salto de linea
+					#obtiene el titulo separado por salto de linea
 					$titulo_array = explode('<br>', $elementos[1]);
 					$titulo_array = explode('</br>', $titulo_array[0]);
 					
