@@ -25,7 +25,7 @@ foreach($ids as $id) {
 
 	$resultado = curl_exec($ch);
 	
-	$explode = explode("<td class='tddatosazul'>Senador Propietario:<br><b>", $resultado);
+	$explode = explode("<td class='tddatosazul'>Senadores Propietario:<br><b>", $resultado);
 	
 	if(isset($explode[1])) {
 		$explode = explode('<br>', $explode[1]);
