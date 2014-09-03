@@ -1,4 +1,5 @@
 <?php
+
 $ch = curl_init();
 
 #Curl a la primera parte de las iniciativas legislatura 62
@@ -14,13 +15,15 @@ $resultado = eregi_replace("<style[^>]*>.*</style>", "", $resultado);
 $resultado = strip_tags($resultado, '<p><a><li><ul><font><br><br/>');
 
 #Hacemos el explode de este codigo que delimita las fechas de seeciones de las iniciativas con titulos rojos
-$explode     = explode('<font color="#CC0000">', $resultado);
-$iniciativas = array();
-
+$explode       = explode('<font color="#CC0000">', $resultado);
+$iniciativas   = array();
+$IniciativasBD = false;
 #si exsite un array y es mayor a 1 si no "algo anda mal" by pacojaso! y  eliminamos la primiera posicion no nos sirve porque es el header del html
 if(is_array($explode) and count($explode) > 1) {
 	unset($explode[0]);
-
+	
+	$IniciativasBD = conexionBD();
+	
 	#recorremos el array de los grupos
 	foreach($explode as $value) {
 		#obtenemos la fecha en que se publico la inicitava haciendo un explode de font donde termina el titulo rojo
@@ -96,7 +99,6 @@ if(is_array($explode) and count($explode) > 1) {
 							#sacamos el texto, target y href del enlace guardamos en array de enlaces
 							$enlances[] = array(
 								"href" 	 => $href[0],
-								"target" => $href[1],
 								"titulo" => $texto_enlace[0]
 							);
 						}
@@ -233,11 +235,28 @@ if(is_array($explode) and count($explode) > 1) {
 					
 					//lo guardamos en el array de la iniciativa
 					$iniciativa_array["titulo_listado"] = $titulo_listado;
-					var_dump($iniciativa_array);
+					
+					#guardamos iniciativa en la BD
+					guardaIiniciativa($iniciativa_array, $IniciativasBD);
 				}
 			}
 		}
 	}
 } else {
 	die("Algo extraño ocurrio :/");
+}
+
+#incluye los archivos y crea la conexión a la base de datos
+function conexionBD() {
+	include_once "class/iniciativas.php";
+	include_once "class/functions/string.php";
+	
+	$Conexion = new Iniciativas();
+	return $Conexion;
+}
+
+#recibe el array a guadar y la conexión de la base de datos
+function guardaIiniciativa($iniciativa, $IniciativasBD) {
+	$dataq = $IniciativasBD->guardar($iniciativa);
+	echo "Iniciativa guardada: " . " " . "<br/>";
 }
