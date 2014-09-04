@@ -16,7 +16,9 @@ class Iniciativas {
 	
 	/*guarda en base de datos la iniciativa*/
 	public function guardar($iniciativa) {
-		unset($iniciativa["votaciones"]);
+		if(isset($iniciativa["votaciones"])) {
+			unset($iniciativa["votaciones"]);
+		}
 		
 		$id_iniciativa = $this->mysql->insert("iniciativas_scrapper", $iniciativa);
 		

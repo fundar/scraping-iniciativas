@@ -1,4 +1,9 @@
+#!/usr/bin/php -q
+
 <?php
+#php index.php -> iniciativas.log &
+
+echo "Iniciando scrapping .... esperar \n\n";
 
 $ch = curl_init();
 
@@ -18,14 +23,18 @@ $resultado = strip_tags($resultado, '<p><a><li><ul><font><br><br/>');
 $explode       = explode('<font color="#CC0000">', $resultado);
 $iniciativas   = array();
 $IniciativasBD = false;
+
 #si exsite un array y es mayor a 1 si no "algo anda mal" by pacojaso! y  eliminamos la primiera posicion no nos sirve porque es el header del html
 if(is_array($explode) and count($explode) > 1) {
 	unset($explode[0]);
 	
 	$IniciativasBD = conexionBD();
 	
+	#imprimimos para el log
+	echo "Numero de grupos: " . count($explode) .  "\n\n";
+	
 	#recorremos el array de los grupos
-	foreach($explode as $value) {
+	foreach($explode as $keygrupo => $value) {
 		#obtenemos la fecha en que se publico la inicitava haciendo un explode de font donde termina el titulo rojo
 		$fecha_array   = explode('</font>', $value);
 		
@@ -44,6 +53,9 @@ if(is_array($explode) and count($explode) > 1) {
 		#comprobamos que exista al menos 1 y eliminamos la prima posicion que es basura de html
 		if(is_array($listas) and count($listas) > 0) {
 			unset($listas[0]);
+			
+			#imprimimos para el log
+			echo "Numero de iniciativas del grupo " . $keygrupo . ": " . count($listas) .  "\n\n";
 			
 			#recorremos el array de la lista de iniciativas y hacemos un explode para determinar el inicio y fin /ul li
 			foreach($listas as $lista) {
@@ -84,6 +96,10 @@ if(is_array($explode) and count($explode) > 1) {
 					#comprueba que exista el array
 					if(is_array($enlaces_array)) {
 						unset($enlaces_array[0]);
+						
+						#limipamos los enlaces
+						$enlances = "";
+						$enlances = array();
 						
 						#recorremos los enlaces
 						foreach($enlaces_array as $value) {
@@ -156,7 +172,7 @@ if(is_array($explode) and count($explode) > 1) {
 								$iniciativa_array["enlace_dictamen_listado"] = "http://gaceta.diputados.gob.mx/" . $value["href"];
 							} elseif($value["titulo"] == "Publicado") {
 								$iniciativa_array["enlace_publicado_listado"] = "http://gaceta.diputados.gob.mx/" . $value["href"];
-							} else {
+							} elseif(utf8_encode($value["titulo"]) == "Votación") {
 								#obtenemos el html de la votación y lo limpiamos
 								curl_setopt($ch, CURLOPT_URL, "http://gaceta.diputados.gob.mx/" . $value["href"]);
 								curl_setopt($ch, CURLOPT_TIMEOUT, 30);
@@ -242,10 +258,13 @@ if(is_array($explode) and count($explode) > 1) {
 			}
 		}
 		
-		echo "<p>El scrapping ha terminado - Revisa la base de datos #MezcalSinControl :)</p>";
+		echo "\n\n ......................................................... \n\n";
 	}
+	
+	echo "\n\n El scrapping ha terminado - Revisa la base de datos #MezcalSinControl :) \n\n";
 } else {
-	die("Algo extraño ocurrio :/");
+	echo "\n\n Algo extraño ocurrio :/ \n\n";
+	die("");
 }
 
 #incluye los archivos y crea la conexión a la base de datos
@@ -262,11 +281,22 @@ function guardaIiniciativa($iniciativa, $IniciativasBD) {
 	$id_iniciativa = $IniciativasBD->guardar($iniciativa);
 	
 	if($id_iniciativa !== false) {
-		$id_iniciativa = $IniciativasBD->guardarVotacion($id_iniciativa, $iniciativa["votaciones"]);
 		
-		echo "Iniciativa Guardada: " . $iniciativa["titulo_listado"] . "<br/><br/>";
+		echo "\n Iniciativa Guardada: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
+		
+		if(isset($iniciativa["votaciones"])) {
+			$votacion = $IniciativasBD->guardarVotacion($id_iniciativa, $iniciativa["votaciones"]);
+			
+			if($votacion === true) {
+				echo " ******** Votación Guardada ******** \n\n";
+			} else {
+				echo " ******** Votación NO Guardada ******** \n\n";
+			}
+		} else {
+			echo " ******** No hay votación ******** \n\n";
+		}
 	} else {
-		echo "Iniciativa NO Guardada: " . $iniciativa["titulo_listado"] . "<br/><br/>";
+		echo "\n Iniciativa NO Guardada: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
 	}
 }
 
