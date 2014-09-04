@@ -16,16 +16,20 @@ class Iniciativas {
 	
 	/*guarda en base de datos la iniciativa*/
 	public function guardar($iniciativa) {
-		if(isset($iniciativa["votaciones"])) {
-			unset($iniciativa["votaciones"]);
-		}
-		
-		$id_iniciativa = $this->mysql->insert("iniciativas_scrapper", $iniciativa);
-		
-		if(is_int($id_iniciativa)) {
-			return $id_iniciativa;
+		if($this->isExists($iniciativa) == false) {
+			if(isset($iniciativa["votaciones"])) {
+				unset($iniciativa["votaciones"]);
+			}
+			
+			$id_iniciativa = $this->mysql->insert("iniciativas_scrapper", $iniciativa);
+			
+			if(is_int($id_iniciativa)) {
+				return $id_iniciativa;
+			} else {
+				return false;
+			}
 		} else {
-			return false;
+			return "existe";
 		}
 	}
 	
@@ -51,5 +55,12 @@ class Iniciativas {
 		} else {
 			return false;
 		}
+	}
+	
+	public function isExists($iniciativa) {
+		$query = "select * from iniciativas_scrapper where titulo_listado='" . $iniciativa["titulo_listado"] . "'";
+		$data = $this->mysql->query($query);
+		
+		return $data;
 	}
 }

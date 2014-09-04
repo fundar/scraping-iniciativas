@@ -1,7 +1,7 @@
 #!/usr/bin/php -q
 
 <?php
-#php index.php -> iniciativas.log &
+#php index.php -> logs/iniciativas-04-10-2014-16-14.log &
 
 echo "Iniciando scrapping .... esperar \n\n";
 
@@ -23,6 +23,7 @@ $resultado = strip_tags($resultado, '<p><a><li><ul><font><br><br/>');
 $explode       = explode('<font color="#CC0000">', $resultado);
 $iniciativas   = array();
 $IniciativasBD = false;
+$contador      = 0;
 
 #si exsite un array y es mayor a 1 si no "algo anda mal" by pacojaso! y  eliminamos la primiera posicion no nos sirve porque es el header del html
 if(is_array($explode) and count($explode) > 1) {
@@ -253,15 +254,17 @@ if(is_array($explode) and count($explode) > 1) {
 					$iniciativa_array["titulo_listado"] = $titulo_listado;
 					
 					#guardamos iniciativa en la BD
-					guardaIiniciativa($iniciativa_array, $IniciativasBD);
+					$contador = guardaIiniciativa($iniciativa_array, $IniciativasBD, $contador);
 				}
 			}
 		}
 		
+		#separación de grupos
 		echo "\n\n ......................................................... \n\n";
 	}
 	
-	echo "\n\n El scrapping ha terminado - Revisa la base de datos #MezcalSinControl :) \n\n";
+	#mensaje de termino de scrapping
+	echo "\n\n El scrapping ha terminado, total: " . $contador . "- Revisa la base de datos #MezcalSinControl :) \n\n";
 } else {
 	echo "\n\n Algo extraño ocurrio :/ \n\n";
 	die("");
@@ -277,27 +280,44 @@ function conexionBD() {
 }
 
 #recibe el array a guadar y la conexión de la base de datos
-function guardaIiniciativa($iniciativa, $IniciativasBD) {
+function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
+	#guaardo la iniciativa
 	$id_iniciativa = $IniciativasBD->guardar($iniciativa);
 	
+	#compruebo que no hubo erro
 	if($id_iniciativa !== false) {
-		
-		echo "\n Iniciativa Guardada: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
-		
-		if(isset($iniciativa["votaciones"])) {
-			$votacion = $IniciativasBD->guardarVotacion($id_iniciativa, $iniciativa["votaciones"]);
-			
-			if($votacion === true) {
-				echo " ******** Votación Guardada ******** \n\n";
-			} else {
-				echo " ******** Votación NO Guardada ******** \n\n";
-			}
+		#si ya existe mando al log
+		if($id_iniciativa == "existe") {
+			echo "\n\n################ \n";
+			echo "Iniciativa Ya Existe: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
+			echo "################ \n\n";
 		} else {
-			echo " ******** No hay votación ******** \n\n";
+			#aumentamos el contador de iniciativas guardadas e imprimimos el log
+			$contador++;
+			echo "\n " . $contador . ".- Iniciativa Guardada: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
+			
+			#compruebo que existan votaciones para guardarlas en la base de datos
+			if(isset($iniciativa["votaciones"])) {
+				$votacion = $IniciativasBD->guardarVotacion($id_iniciativa, $iniciativa["votaciones"]);
+				
+				if($votacion === true) {
+					echo "******** Votación Guardada ********\n\n";
+				} else {
+					echo "******** Votación NO Guardada ********\n\n";
+				}
+			} else {
+				echo "******** No hay votación ********\n\n";
+			}
 		}
 	} else {
+		#mando el log que no se pudo guardar y hago un dump de la variable
+		echo "\n\n################n\n";
 		echo "\n Iniciativa NO Guardada: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
+		var_dump(iniciativa);
+		echo "\n\n################\n\n";
 	}
+	
+	return $contador;
 }
 
 
