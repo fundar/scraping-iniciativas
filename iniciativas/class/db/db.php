@@ -740,7 +740,7 @@ class Db  {
 			}
 		}
 		
-		$table = $this->getTable($table);
+		#$table = $this->getTable($table);
 		
 		if(is_array($data)) {
 			$count   = count($data) - 1;

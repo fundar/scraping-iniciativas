@@ -241,6 +241,8 @@ if(is_array($explode) and count($explode) > 1) {
 				}
 			}
 		}
+		
+		echo "<p>El scrapping ha terminado - Revisa la base de datos #MezcalSinControl :)</p>";
 	}
 } else {
 	die("Algo extraño ocurrio :/");
@@ -257,6 +259,15 @@ function conexionBD() {
 
 #recibe el array a guadar y la conexión de la base de datos
 function guardaIiniciativa($iniciativa, $IniciativasBD) {
-	$dataq = $IniciativasBD->guardar($iniciativa);
-	echo "Iniciativa guardada: " . " " . "<br/>";
+	$id_iniciativa = $IniciativasBD->guardar($iniciativa);
+	
+	if($id_iniciativa !== false) {
+		$id_iniciativa = $IniciativasBD->guardarVotacion($id_iniciativa, $iniciativa["votaciones"]);
+		
+		echo "Iniciativa Guardada: " . $iniciativa["titulo_listado"] . "<br/><br/>";
+	} else {
+		echo "Iniciativa NO Guardada: " . $iniciativa["titulo_listado"] . "<br/><br/>";
+	}
 }
+
+

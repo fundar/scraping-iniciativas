@@ -1,9 +1,10 @@
 CREATE TABLE iniciativas_scrapper (
   `id_iniciativa` int(11) NOT NULL AUTO_INCREMENT,
   `id_legislatura` int(11) NOT NULL,
-  `fecha_listado` timestamp NULL DEFAULT NULL,
-  `fecha_listado_string` varchar(255) DEFAULT NULL,
+  `fecha_listado_tm` timestamp NULL DEFAULT NULL,
+  `fecha_listado` varchar(255) DEFAULT NULL,
   `titulo` text NOT NULL,
+  `titulo_listado` text NOT NULL,
   `enlace_dictamen_listado` varchar(255) NOT NULL,
   `enlace_publicado_listado` varchar(255) NOT NULL,
   `contenido_html_iniciativa` text NOT NULL,
