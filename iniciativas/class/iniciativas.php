@@ -19,6 +19,7 @@ class Iniciativas {
 		if($this->isExists($iniciativa) == false) {
 			if(isset($iniciativa["votaciones"])) {
 				unset($iniciativa["votaciones"]);
+				unset($iniciativa["votos_nombres"]);
 			}
 			
 			$id_iniciativa = $this->mysql->insert("iniciativas_scrapper", $iniciativa);
@@ -49,6 +50,32 @@ class Iniciativas {
 				#inserto el registro en la base de datos
 				$query = $query . " " . $fields . " values " . $values;
 				$voto = $this->mysql->query($query);
+			}
+			
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/*guarda los nombres de los representantes en las votaciones de la iniciativa*/
+	public function guardarVotacionNombres($id_iniciativa = false, $votos) {
+		#compruebo que no este en falso la iniciativa
+		if($id_iniciativa != false) {
+			#recorro los tipos de votos para guardar uno por uno, recorre los tipos de votos y los nombres de representantes
+			foreach($votos as $key_tipo => $voto) {
+				foreach($voto as $key_partido => $tipo) {
+					foreach($tipo as $key_nombre => $nombre) {
+						#formo el query para las votaciones
+						$query  = "insert into votos_representantes";
+						$fields = "(id_iniciativa, nombre, partido, tipo) ";
+						$values = "(" . $id_iniciativa . ",'" . $nombre . "','" . $key_partido . "','" .  $key_tipo . "')";
+						
+						#inserto el registro en la base de datos
+						$query  = $query . " " . $fields . " values " . $values;
+						$result = $this->mysql->query($query);
+					}
+				}
 			}
 			
 			return true;

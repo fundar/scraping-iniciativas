@@ -28,3 +28,12 @@ CREATE TABLE votaciones (
   `total` integer NOT NULL default 0,
   PRIMARY KEY (`id_voto`)
 );
+
+CREATE TABLE votos_representantes (
+  `id_voto_representante` int(11) NOT NULL AUTO_INCREMENT,
+  `id_iniciativa` int(11) NOT NULL,
+  `nombre` varchar(255) NOT NULL default 0,
+  `partido` varchar(255) NOT NULL default 0,
+  `tipo` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id_voto_representante`)
+);

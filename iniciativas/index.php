@@ -5,10 +5,11 @@
 
 echo "Iniciando scrapping .... esperar \n\n";
 
-$ch = curl_init();
+$ch      = curl_init();
+$baseurl = "http://gaceta.diputados.gob.mx";
 
 #Curl a la primera parte de las iniciativas legislatura 62
-curl_setopt($ch, CURLOPT_URL, "http://gaceta.diputados.gob.mx/Gaceta/Iniciativas/62/gp62_a2primero.html");
+curl_setopt($ch, CURLOPT_URL, $baseurl . "/Gaceta/Iniciativas/62/gp62_a2primero.html");
 curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -129,7 +130,7 @@ if(is_array($explode) and count($explode) > 1) {
 									$ancla = $ancla[1];
 									
 									#obtenemos el html
-									curl_setopt($ch, CURLOPT_URL, "http://gaceta.diputados.gob.mx/" . $value["href"]);
+									curl_setopt($ch, CURLOPT_URL, $baseurl . "/" . $value["href"]);
 									curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 									curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 									curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -167,15 +168,15 @@ if(is_array($explode) and count($explode) > 1) {
 									#guardamos el contenido en el array de la iniciativa
 									$iniciativa_array["contenido_html_iniciativa"] = $contenido_html;
 								} else {
-									$iniciativa_array["enlace_gaceta"] = "http://gaceta.diputados.gob.mx/" . $value["href"];
+									$iniciativa_array["enlace_gaceta"] = $baseurl . "/" . $value["href"];
 								}
 							} elseif($value["titulo"] == "Dictaminada") {
-								$iniciativa_array["enlace_dictamen_listado"] = "http://gaceta.diputados.gob.mx/" . $value["href"];
+								$iniciativa_array["enlace_dictamen_listado"] = $baseurl . "/" . $value["href"];
 							} elseif($value["titulo"] == "Publicado") {
-								$iniciativa_array["enlace_publicado_listado"] = "http://gaceta.diputados.gob.mx/" . $value["href"];
+								$iniciativa_array["enlace_publicado_listado"] = $baseurl . "/" . $value["href"];
 							} elseif(utf8_encode($value["titulo"]) == "Votación") {
 								#obtenemos el html de la votación y lo limpiamos
-								curl_setopt($ch, CURLOPT_URL, "http://gaceta.diputados.gob.mx/" . $value["href"]);
+								curl_setopt($ch, CURLOPT_URL, $baseurl . "/" . $value["href"]);
 								curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 								curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 								curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -183,6 +184,21 @@ if(is_array($explode) and count($explode) > 1) {
 								$html_votacion = curl_exec($ch);
 								$html_votacion = eregi_replace("<head[^>]*>.*</head>", "",   $html_votacion);
 								$html_votacion = eregi_replace("<style[^>]*>.*</style>", "", $html_votacion);
+								
+								#guardamos los inputs hiddens para la petición donde obtenemos los nombres de los diputados [action, nomit y evento]
+								$nomtit = explode('nomtit" VALUE="', $html_votacion);
+								$nomtit = explode('">', $nomtit[1]);
+								$nomtit = $nomtit[0];
+								
+								$evento = explode('evento" VALUE="', $html_votacion);
+								$evento = explode('">', $evento[1]);
+								$evento = $evento[0];
+								
+								$action = explode('<form enctype= method="post" action="', $html_votacion);
+								$action = explode('">', $action[1]);
+								$action = $action[0];
+								
+								$url_nom_diputados = $baseurl . $action . "?evento=" . urlencode($evento) . "&nomtit=" . urlencode($nomtit) . "&";
 								
 								#solo permitimos input td y tr
 								$html_votacion = strip_tags($html_votacion, '<input><tr><td>');
@@ -196,23 +212,37 @@ if(is_array($explode) and count($explode) > 1) {
 								$html_votacion = str_replace(' width="14%" valign="top"', '', $html_votacion);
 								$html_votacion = str_replace(' width="14%" valign="top"', '', $html_votacion);
 								$html_votacion = str_replace(' cellpadding=10', '', $html_votacion);
-								
-								#remplazamos lo que venga dentro de lola[], valores en 0, atributo name y atributo value para dejar los puros valores
-								$html_votacion = eregi_replace('lola\[[0-9][0-9]\]', "", $html_votacion);
-								$html_votacion = str_replace(' name="" ', '', $html_votacion);
 								$html_votacion = str_replace('<value=" 0 ">', '0', $html_votacion);
-								$html_votacion = str_replace('<value="', '', $html_votacion);
 								$html_votacion = str_replace('">', '', $html_votacion);
 								
 								#remplazamos tr, para dejar puros td
 								$html_votacion = str_replace('</tr>', '', $html_votacion);
 								$html_votacion = str_replace('</td>', '', $html_votacion);
 								
+								#declaramos variables para sacar los parametros
+								$html_lola = $html_votacion;
+								
+								/*esta parte esta comentada para obteher la url de los diputados que votaron en que sentido*/
+								$html_votacion = eregi_replace('lola\[[0-9][0-9]\]', "", $html_votacion);
+								
+								#remplazamos valores en 0, atributo name y atributo value para dejar los puros valores
+								$html_votacion = str_replace('< name="" value="', '', $html_votacion);
+								$html_votacion = str_replace('" value="', '', $html_votacion);
+								$html_votacion = str_replace(' name="" ', '', $html_votacion);
+								$html_votacion = str_replace('<value="', '', $html_votacion);
+								$html_votacion = str_replace('<value="', '', $html_votacion);
+								
 								#lo dividimos en las tablas y eliminaos posiciones que no sirven
 								$tablas_votacion = explode('<tr>', $html_votacion);
 								unset($tablas_votacion[count($tablas_votacion) - 1]);
 								unset($tablas_votacion[0]);
 								unset($tablas_votacion[1]);
+
+								#lo dividimos en las tablas y eliminaos posiciones que no sirven lola parametros
+								$tablas_lola_votacion = explode('<tr>', $html_lola);
+								unset($tablas_lola_votacion[count($tablas_lola_votacion) - 1]);
+								unset($tablas_lola_votacion[0]);
+								unset($tablas_lola_votacion[1]);
 								
 								#separamos los encabezados de las tablas
 								$encabezados = explode('<td>', trim($tablas_votacion[2]));
@@ -220,23 +250,117 @@ if(is_array($explode) and count($explode) > 1) {
 								unset($encabezados[1]);
 								
 								#array de votaciones
-								$iniciativa_array["votaciones"] = array();
+								$iniciativa_array["votaciones"]    = array();
+								$iniciativa_array["votos_nombres"] = array();
 								
+								#arrays de votaciones - renglones
+								$tablas3 = explode('<td>', trim($tablas_votacion[3]));
+								$tablas4 = explode('<td>', trim($tablas_votacion[4]));
+								$tablas5 = explode('<td>', trim($tablas_votacion[5]));
+								$tablas6 = explode('<td>', trim($tablas_votacion[6]));
+								$tablas7 = explode('<td>', trim($tablas_votacion[7]));
+								$tablas8 = explode('<td>', trim($tablas_votacion[8]));
+								unset($tablas3[0]);
+								unset($tablas4[0]);
+								unset($tablas5[0]);
+								unset($tablas6[0]);
+								unset($tablas7[0]);
+								unset($tablas8[0]);
+								
+								#todo - convertir esto a un array para ahorrar lineas
+								#arrays de parametros lola - renglones
+								$tabla_lola[3] = explode('<td>', trim($tablas_lola_votacion[3]));
+								$tabla_lola[4] = explode('<td>', trim($tablas_lola_votacion[4]));
+								$tabla_lola[5] = explode('<td>', trim($tablas_lola_votacion[5]));
+								$tabla_lola[6] = explode('<td>', trim($tablas_lola_votacion[6]));
+								$tabla_lola[7] = explode('<td>', trim($tablas_lola_votacion[7]));
+								
+								foreach($tabla_lola as $key => $tabla) {
+									unset($tabla[0]);
+									$search = strpos(trim($tabla[2]), "lola");
+									
+									if($key == 3) $tipo     = "favor";
+									elseif($key == 4) $tipo = "contra";
+									elseif($key == 5) $tipo = "abstencion";
+									elseif($key == 6) $tipo = "quorum";
+									elseif($key == 7) $tipo = "ausente";
+									
+									#comparacion para saber si si tiene ese parametro
+									if($search !== FALSE) {
+										$str = str_replace('< name="', '', $tabla[2]);
+										$str = explode('" value="', trim($str));
+										$name  = $str[0];
+										$value = $str[1];
+										
+										#construimos la url
+										$url_str = $url_nom_diputados . urlencode($name) . "=" . $value;
+										
+										#obtenemos la url con curl
+										curl_setopt($ch, CURLOPT_URL, $url_str);
+										curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+										curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+										curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+									
+										$html_votantes = curl_exec($ch);
+										$html_votantes = eregi_replace("<head[^>]*>.*</head>", "",   $html_votantes);
+										$html_votantes = eregi_replace("<style[^>]*>.*</style>", "", $html_votantes);
+										
+										#solo permitimos input br y center
+										$html_votantes = str_replace('</center>', '', $html_votantes);
+										$html_votantes = strip_tags($html_votantes, '<br><center>');
+										
+										#convertimos a un array por partido
+										$partidos_votos = explode('<center>', $html_votantes);
+										unset($partidos_votos[0]);
+										unset($partidos_votos[count($partidos_votos)]);
+										
+										#reocrremos el array de las secciones de votantes por partido
+										foreach($partidos_votos as $key2 => $partido_array) {
+											$partido_array = str_replace('<br><br>', '', $partido_array);
+											$lista_array   = explode('<br>', $partido_array);
+											
+											#se guarda la primer posicion del partido y se elimina del array
+											$partido = trim($lista_array[0]);
+											unset($lista_array [0]);
+											
+											#condiciones para sacar el nombre del partido
+											if(strpos($partido, "Diputados del ") !== FALSE) {
+												$partido = explode('Diputados del ', $partido);
+												$partido = explode(' que', $partido[1]);
+												$partido = $partido[0];
+											} elseif(strpos($partido, "Diputados de ") !== FALSE) {
+												$partido = explode('Diputados de ', $partido);
+												$partido = explode(' que', $partido[1]);
+												$partido = $partido[0];
+											} elseif(strpos($partido, "Diputados ") !== FALSE) {
+												$partido = explode('Diputados ', $partido);
+												$partido = explode(' que', $partido[1]);
+												$partido = $partido[0];
+											} else {
+												$partido = "Desconocido";
+											}
+											
+											$count = 0;
+											#limpiamos el array de representates
+											foreach($lista_array as $number => $diputado) {
+												if(trim($diputado) != "") {
+													$diputado             = explode(":", $diputado);
+													$lista_array[$number] = trim($diputado[1]);
+													$count++;
+												} else {
+													unset($lista_array[$number]);
+												}
+											}
+											
+											if($count >= 1) {
+												$iniciativa_array["votos_nombres"][$tipo][$partido] = $lista_array;
+											}
+										}
+									}
+								}
+								
+								#to-do falta hacer la petición para saber cuales diputados [nombres] votaron en que sentido
 								foreach($encabezados as $key => $value) {
-									$tablas3 = explode('<td>', trim($tablas_votacion[3]));
-									$tablas4 = explode('<td>', trim($tablas_votacion[4]));
-									$tablas5 = explode('<td>', trim($tablas_votacion[5]));
-									$tablas6 = explode('<td>', trim($tablas_votacion[6]));
-									$tablas7 = explode('<td>', trim($tablas_votacion[7]));
-									$tablas8 = explode('<td>', trim($tablas_votacion[8]));
-									unset($tablas3[0]);
-									unset($tablas4[0]);
-									unset($tablas5[0]);
-									unset($tablas6[0]);
-									unset($tablas7[0]);
-									unset($tablas8[0]);
-									
-									
 									$iniciativa_array["votaciones"][trim($value)] = array(
 										"favor" 	 => trim($tablas3[$key]),
 										"contra" 	 => trim($tablas4[$key]),
@@ -296,9 +420,10 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 			$contador++;
 			echo "\n " . $contador . ".- Iniciativa Guardada: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
 			
-			#compruebo que existan votaciones para guardarlas en la base de datos
+			#compruebo que existan votaciones para guardarlas en la base de datos, guarda tambipen los nombres de los representantes
 			if(isset($iniciativa["votaciones"])) {
-				$votacion = $IniciativasBD->guardarVotacion($id_iniciativa, $iniciativa["votaciones"]);
+				$votacion  = $IniciativasBD->guardarVotacion($id_iniciativa, $iniciativa["votaciones"]);
+				$votos_nom = $IniciativasBD->guardarVotacionNombres($id_iniciativa, $iniciativa["votos_nombres"]);
 				
 				if($votacion === true) {
 					echo "******** Votación Guardada ********\n\n";
@@ -319,5 +444,3 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 	
 	return $contador;
 }
-
-
