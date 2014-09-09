@@ -16,10 +16,10 @@ CREATE TABLE iniciativas_scrapper (
   PRIMARY KEY (`id_iniciativa`)
 );
 
-
 CREATE TABLE votaciones (
   `id_voto` int(11) NOT NULL AUTO_INCREMENT,
   `id_iniciativa` int(11) NOT NULL,
+  `id_partido` int(11) NOT NULL,
   `tipo` varchar(255) DEFAULT NULL,
   `favor` integer NOT NULL default 0,
   `contra` integer NOT NULL default 0,
@@ -33,6 +33,7 @@ CREATE TABLE votaciones (
 CREATE TABLE votos_representantes (
   `id_voto_representante` int(11) NOT NULL AUTO_INCREMENT,
   `id_iniciativa` int(11) NOT NULL,
+  `id_partido` int(11) NOT NULL,
   `nombre` varchar(255) NOT NULL default 0,
   `partido` varchar(255) NOT NULL default 0,
   `tipo` varchar(255) DEFAULT NULL,
