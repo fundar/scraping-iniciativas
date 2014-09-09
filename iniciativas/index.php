@@ -15,7 +15,7 @@ $url     = "/Gaceta/Iniciativas/62/gp62_a2primero.html";
 */
 
 $periodo = '1er. periodo Com. Permanente';
-$url     = "/Gaceta/Iniciativas/62/gp62_a2perma1.html"
+$url     = "/Gaceta/Iniciativas/62/gp62_a2perma1.html";
 
 #Curl a la primera parte de las iniciativas legislatura 62
 curl_setopt($ch, CURLOPT_URL, $baseurl . $url);
