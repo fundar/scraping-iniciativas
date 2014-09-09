@@ -12,6 +12,7 @@ CREATE TABLE iniciativas_scrapper (
   `enviada` text DEFAULT NULL,
   `turnada` text DEFAULT NULL,
   `presentada` text DEFAULT NULL,
+  `periodo` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id_iniciativa`)
 );
 
