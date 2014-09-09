@@ -14,8 +14,10 @@ $periodo = 'Primer periodo ordinario';
 $url     = "/Gaceta/Iniciativas/62/gp62_a2primero.html";
 */
 
-$periodo = '1er. periodo Com. Permanente';
-$url     = "/Gaceta/Iniciativas/62/gp62_a2perma1.html";
+/*datos iniciales*/
+$periodo        = '1er. periodo Com. Permanente';
+$url            = "/Gaceta/Iniciativas/62/gp62_a2perma1.html";
+$id_legislatura = 1;
 
 #Curl a la primera parte de las iniciativas legislatura 62
 curl_setopt($ch, CURLOPT_URL, $baseurl . $url);
@@ -387,6 +389,7 @@ if(is_array($explode) and count($explode) > 1) {
 						//Guardamos el titulo y el periodo en el array de la iniciativa
 						$iniciativa_array["titulo_listado"] = $titulo_listado;
 						$iniciativa_array["periodo"]        = $periodo;
+						$iniciativa_array["id_legislatura"] = $id_legislatura;
 						
 						#guardamos iniciativa en la BD
 						$contador = guardaIiniciativa($iniciativa_array, $IniciativasBD, $contador);
