@@ -55,3 +55,46 @@ create index on votaciones_representantes_scrapper(id_partido);
 create index on votaciones_representantes_scrapper(tipo);
 create index on votaciones_representantes_scrapper(nombre);
 create index on votaciones_representantes_scrapper(partido);
+
+CREATE TABLE representatives_scrapper (
+  `id_representative` serial,
+  `id_representative_type` integer not null,
+  `name` varchar(255) DEFAULT NULL,
+  `id_political_party` integer not null,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `avatar_id` varchar(255) DEFAULT NULL,
+  `birthday` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT now(),
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `birth_state` varchar(255) DEFAULT NULL,
+  `birth_city` varchar(255) DEFAULT NULL,
+  `election_type` varchar(255) DEFAULT NULL,
+  `zone_state` varchar(255) DEFAULT NULL,
+  `district_circumscription` varchar(255) DEFAULT NULL,
+  `fecha_protesta` varchar(255) DEFAULT NULL,
+  `ubication` varchar(255) DEFAULT NULL,
+  `substitute` varchar(255) DEFAULT NULL,
+  `ultimo_grado_estudios` varchar(255) DEFAULT NULL,
+  `career` varchar(255) DEFAULT NULL,
+  `exp_legislative` varchar(255) DEFAULT NULL,
+  `id_legislature` integer not null,
+  `commisions` varchar(255) DEFAULT NULL,
+  `suplentede` varchar(255) DEFAULT NULL,
+ )  
+create index on representatives_scrapper(id_iniciativa);
+create index on representatives_scrapper(id_representative_type);
+create index on representatives_scrapper(id_legislature);
+
+
+
+ 
+CREATE TABLE representative_type (
+  `id_representative_type` serial,
+  `name` varchar(255) DEFAULT NULL,
+  `slug` varchar(255) DEFAULT NULL,
+  ) 
+create index on representative_type(id_representative_type);
+create index on representative_type(name);
+
+
