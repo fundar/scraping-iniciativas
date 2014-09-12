@@ -20,9 +20,8 @@
  * @author		MilkZoft Developer Team
  * @link		http://www.zanphp.com/documentation/en/classes/db_class
  */
-
-/*driver mysqli*/
-include_once "mysqli_db.php";
+ 
+include_once "pgsql_db.php";
 
 class Db  {
 	
@@ -138,7 +137,7 @@ class Db  {
      * @return void
      */
 	public function __construct() {
-		$this->Database = new MySQLi_Db();
+		$this->Database = new PgSQL_Db();
 	}
 			
 	/**
@@ -740,7 +739,7 @@ class Db  {
 			}
 		}
 		
-		#$table = $this->getTable($table);
+		$table = $this->getTable($table);
 		
 		if(is_array($data)) {
 			$count   = count($data) - 1;

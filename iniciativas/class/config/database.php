@@ -2,7 +2,7 @@
 
 //Config database
 $db["dbHost"] = "localhost";
-$db["dbPort"] = "3306";
-$db["dbName"] = "iniciativas_scrapper";
-$db["dbUser"] = "root";
-$db["dbPwd"]  = "root";
+$db["dbPort"] = "5432";
+$db["dbName"] = "curul501_admin";
+$db["dbUser"] = "postgres";
+$db["dbPwd"]  = "postgres";

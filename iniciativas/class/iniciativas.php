@@ -9,9 +9,9 @@ class Iniciativas {
 		include_once "config/database.php";
 		
 		/*conexion con base de datos*/
-		$this->mysql = new Db();
-		$this->mysql->connect($db);
-		$this->mysql->query("SET NAMES 'utf8′");
+		$this->pgsql = new Db();
+		$this->pgsql->connect($db);
+		$this->pgsql->query("SET NAMES 'utf8'");
 	}
 	
 	/*guarda en base de datos la iniciativa*/
@@ -28,7 +28,7 @@ class Iniciativas {
 			
 			#La guarda pero con un id_parten 0
 			$iniciativa["id_parent"] = 0;
-			$id_iniciativa 			 = $this->mysql->insert("iniciativas_scrapper", $iniciativa);
+			$id_iniciativa 			 = $this->pgsql->insert("iniciativas_scrapper", $iniciativa);
 			
 			if(is_int($id_iniciativa)) {
 				return $id_iniciativa;
@@ -38,7 +38,7 @@ class Iniciativas {
 		} else {
 			#si ya existe la guarda pero con un id_parten de la que ya existe
 			$iniciativa["id_parent"] = $data[0]["id_iniciativa"];
-			$id_iniciativa           = $this->mysql->insert("iniciativas_scrapper", $iniciativa);
+			$id_iniciativa           = $this->pgsql->insert("iniciativas_scrapper", $iniciativa);
 			
 			if(is_int($id_iniciativa)) {
 				return array("existe" => "existe", "id_iniciativa" => $id_iniciativa);
@@ -63,7 +63,7 @@ class Iniciativas {
 				
 				#inserto el registro en la base de datos
 				$query = $query . " " . $fields . " values " . $values;
-				$voto = $this->mysql->query($query);
+				$voto = $this->pgsql->query($query);
 			}
 			
 			return true;
@@ -87,7 +87,7 @@ class Iniciativas {
 						
 						#inserto el registro en la base de datos
 						$query  = $query . " " . $fields . " values " . $values;
-						$result = $this->mysql->query($query);
+						$result = $this->pgsql->query($query);
 					}
 				}
 			}
@@ -100,16 +100,18 @@ class Iniciativas {
 	
 	/*comprueba si existe la iniciativa*/
 	public function isExists($iniciativa) {
-		$query = "select * from iniciativas_scrapper where titulo_listado='" . $iniciativa["titulo_listado"] . "' and id_parent=0";
-		$data = $this->mysql->query($query);
+		$query = utf8_encode("select * from iniciativas_scrapper where titulo_listado='" . $iniciativa["titulo_listado"] . "' and id_parent=0");
+		$data  = $this->pgsql->query($query);
+		die(var_dump($data));
 		
 		return $data;
 	}
 	
 	/*comprueba si la iniciativa es igual [titulo y html]*/
 	public function isSame($iniciativa) {
-		$query = "select * from iniciativas_scrapper where titulo_listado='" . $iniciativa["titulo_listado"] . "' and html_listado='" . $iniciativa["html_listado"]  . "'";
-		$data = $this->mysql->query($query);
+		$query = utf8_encode("select * from iniciativas_scrapper where titulo_listado='" . $iniciativa["titulo_listado"] . "' and html_listado='" . $iniciativa["html_listado"]  . "'");
+		$data = $this->pgsql->query($query);
+		die(var_dump($data));
 		
 		return $data;
 	}
