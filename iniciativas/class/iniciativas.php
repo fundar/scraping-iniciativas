@@ -16,13 +16,19 @@ class Iniciativas {
 	
 	/*guarda en base de datos la iniciativa*/
 	public function guardar($iniciativa) {
-		if($this->isExists($iniciativa) == false) {
+		$data = $this->isExists($iniciativa);
+		
+		#si no existe la guarda por primera
+		if($data == false) {
+			#eliminamos arrays de votaciones para solo dejar lo de iniciativas
 			if(isset($iniciativa["votaciones"])) {
 				unset($iniciativa["votaciones"]);
 				unset($iniciativa["votos_nombres"]);
 			}
 			
-			$id_iniciativa = $this->mysql->insert("iniciativas_scrapper", $iniciativa);
+			#La guarda pero con un id_parten 0
+			$iniciativa["id_parent"] = 0;
+			$id_iniciativa 			 = $this->mysql->insert("iniciativas_scrapper", $iniciativa);
 			
 			if(is_int($id_iniciativa)) {
 				return $id_iniciativa;
@@ -30,7 +36,15 @@ class Iniciativas {
 				return false;
 			}
 		} else {
-			return "existe";
+			#si ya existe la guarda pero con un id_parten de la que ya existe
+			$iniciativa["id_parent"] = $data[0]["id_iniciativa"];
+			$id_iniciativa           = $this->mysql->insert("iniciativas_scrapper", $iniciativa);
+			
+			if(is_int($id_iniciativa)) {
+				return array("existe" => "existe", "id_iniciativa" => $id_iniciativa);
+			} else {
+				return false;
+			}
 		}
 	}
 	
@@ -41,7 +55,7 @@ class Iniciativas {
 			#recorro los tipos de votos para guardar uno por uno
 			foreach($votacion as $key => $voto) {
 				#formo el query para las votaciones
-				$query  = "insert into votaciones";
+				$query  = "insert into votaciones_partidos_scrapper";
 				$fields = "(id_iniciativa, tipo, favor, contra, abstencion, quorum, ausente, total) ";
 				
 				$values  = "(" . $id_iniciativa . ",'" . $key . "'," . $voto["favor"] . "," .  $voto["contra"] . "," .  $voto["abstencion"] . ",";
@@ -67,7 +81,7 @@ class Iniciativas {
 				foreach($voto as $key_partido => $tipo) {
 					foreach($tipo as $key_nombre => $nombre) {
 						#formo el query para las votaciones
-						$query  = "insert into votos_representantes";
+						$query  = "insert into votaciones_representantes_scrapper";
 						$fields = "(id_iniciativa, nombre, partido, tipo) ";
 						$values = "(" . $id_iniciativa . ",'" . $nombre . "','" . $key_partido . "','" .  $key_tipo . "')";
 						
@@ -84,8 +98,17 @@ class Iniciativas {
 		}
 	}
 	
+	/*comprueba si existe la iniciativa*/
 	public function isExists($iniciativa) {
-		$query = "select * from iniciativas_scrapper where titulo_listado='" . $iniciativa["titulo_listado"] . "'";
+		$query = "select * from iniciativas_scrapper where titulo_listado='" . $iniciativa["titulo_listado"] . "' and id_parent=0";
+		$data = $this->mysql->query($query);
+		
+		return $data;
+	}
+	
+	/*comprueba si la iniciativa es igual [titulo y html]*/
+	public function isSame($iniciativa) {
+		$query = "select * from iniciativas_scrapper where titulo_listado='" . $iniciativa["titulo_listado"] . "' and html_listado='" . $iniciativa["html_listado"]  . "'";
 		$data = $this->mysql->query($query);
 		
 		return $data;
