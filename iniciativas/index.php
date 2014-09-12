@@ -435,14 +435,20 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 	
 	#compruebo que no hubo erro
 	if($id_iniciativa !== false) {
-		#si ya existe mando al log
-		if($id_iniciativa == "existe") {
+		#si ya existe pero tiene modificaciones
+		if(is_array($id_iniciativa) and isset($id_iniciativa["existe"])) {
+			#aumentamos el contador de iniciativas guardadas e imprimimos el log
+			$contador++;
+			
+			#log de que ya existe pero tiene modifiaciones
 			echo "\n\n########################## \n";
-			echo "Iniciativa Ya Existe: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
+				echo "\n " . $contador . ".- Iniciativa ya existe pero tiene modificaciones: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
+				echo "El ID de esta iniciativa es: " . $id_iniciativa["id_iniciativa"] . "\n";
 			echo "########################## \n\n";
 		} else {
 			#aumentamos el contador de iniciativas guardadas e imprimimos el log
 			$contador++;
+			
 			echo "\n\n##########################";
 				echo "\n " . $contador . ".- Iniciativa Guardada: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
 				echo "El ID de esta iniciativa es: " . $id_iniciativa . "\n";
