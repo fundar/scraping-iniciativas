@@ -82,7 +82,6 @@ CREATE TABLE representatives_scrapper (
   commisions varchar(255) DEFAULT NULL,
   suplentede varchar(255) DEFAULT NULL
 );
-
 create index on representatives_scrapper(id_iniciativa);
 create index on representatives_scrapper(id_representative_type);
 create index on representatives_scrapper(id_legislature);
@@ -93,6 +92,5 @@ CREATE TABLE representative_type (
   name varchar(255) DEFAULT NULL,
   slug varchar(255) DEFAULT NULL
 );
-
 create index on representative_type(id_representative_type);
 create index on representative_type(name);
