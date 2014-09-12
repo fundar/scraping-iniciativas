@@ -28,7 +28,7 @@ class Iniciativas {
 			
 			#La guarda pero con un id_parten 0
 			$iniciativa["id_parent"] = 0;
-			$id_iniciativa 			 = $this->pgsql->insert("iniciativas_scrapper", $iniciativa);
+			$id_iniciativa 		     = $this->save("iniciativas_scrapper", $iniciativa, "id_iniciativa");
 			
 			if(is_int($id_iniciativa)) {
 				return $id_iniciativa;
@@ -38,7 +38,7 @@ class Iniciativas {
 		} else {
 			#si ya existe la guarda pero con un id_parten de la que ya existe
 			$iniciativa["id_parent"] = $data[0]["id_iniciativa"];
-			$id_iniciativa           = $this->pgsql->insert("iniciativas_scrapper", $iniciativa);
+			$id_iniciativa 			 = $this->save("iniciativas_scrapper", $iniciativa, "id_iniciativa");
 			
 			if(is_int($id_iniciativa)) {
 				return array("existe" => "existe", "id_iniciativa" => $id_iniciativa);
@@ -62,8 +62,8 @@ class Iniciativas {
 				$values .= $voto["quorum"] . "," .  $voto["ausente"] . "," .  $voto["total"] . ")";
 				
 				#inserto el registro en la base de datos
-				$query = $query . " " . $fields . " values " . $values;
-				$voto = $this->pgsql->query($query);
+				$query = utf8_encode($query . " " . $fields . " values " . $values);
+				$voto  = $this->pgsql->query($query);
 			}
 			
 			return true;
@@ -86,7 +86,7 @@ class Iniciativas {
 						$values = "(" . $id_iniciativa . ",'" . $nombre . "','" . $key_partido . "','" .  $key_tipo . "')";
 						
 						#inserto el registro en la base de datos
-						$query  = $query . " " . $fields . " values " . $values;
+						$query  = utf8_encode($query . " " . $fields . " values " . $values);
 						$result = $this->pgsql->query($query);
 					}
 				}
@@ -112,5 +112,27 @@ class Iniciativas {
 		$data = $this->pgsql->query($query);
 		
 		return $data;
+	}
+	
+	/*funcion para hacer un insert en un tabla, paramtros array y tabla*/
+	public function save($table, $data, $id_return) {
+		$fields = "";
+		$values = "";
+		
+		foreach($data as $field => $value) {
+			$fields .= "$field,";
+			$values .= "'$value',";
+		}
+		
+		$fields = rtrim($fields, ",");
+		$values = rtrim($values, ",");
+		$query  = utf8_encode("INSERT INTO $table ($fields) VALUES ($values) RETURNING $id_return");
+		$result = $this->pgsql->query($query);
+		
+		if(is_array($result) and isset($result[0][$id_return])) {
+			return intval($result[0][$id_return]);
+		} else {
+			return false;
+		}
 	}
 }

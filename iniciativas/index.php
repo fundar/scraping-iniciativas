@@ -8,11 +8,12 @@ echo "Iniciando scrapping .... esperar \n\n";
 $ch      = curl_init();
 $baseurl = "http://gaceta.diputados.gob.mx";
 
+#ver la tabla de legislaturas del admin 1 = LXII
+$id_legislatura = 1; 
+
 /*datos iniciales periodo y url de la lista de iniciativas*/
-/*
 $periodo = 'Primer periodo ordinario';
 $url     = "/Gaceta/Iniciativas/62/gp62_a2primero.html";
-*/
 
 /*datos iniciales periodo y url de la lista de iniciativas*/
 /*
@@ -20,10 +21,11 @@ $periodo        = '1er. periodo Com. Permanente';
 $url            = "/Gaceta/Iniciativas/62/gp62_a2perma1.html";
 */
 
-$id_legislatura = 1; #ver la tabla de legislaturas del admin 1 = LXII
-
+/*datos iniciales periodo y url de la lista de iniciativas*/
+/*
 $periodo        = 'Primer periodo ordinario';
 $url            = "/Gaceta/Iniciativas/62/gp62_a3primero.html";
+*/
 
 #Curl a la primera parte de las iniciativas legislatura 62
 curl_setopt($ch, CURLOPT_URL, $baseurl . $url);

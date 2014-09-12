@@ -22,9 +22,9 @@ create index on iniciativas_scrapper(id_legislatura);
 
 CREATE TABLE votaciones_partidos_scrapper (
   id_voto serial,
-  id_contador_voto integer not null,
+  id_contador_voto integer not null default 1,
   id_iniciativa integer not null,
-  id_partido integer not null,
+  id_partido integer not null default 0,
   tipo varchar(255) DEFAULT NULL,
   favor integer NOT NULL default 0,
   contra integer NOT NULL default 0,
@@ -43,7 +43,7 @@ CREATE TABLE votaciones_representantes_scrapper (
   id_voto_representante serial,
   id_contador_voto integer NOT NULL default 1,
   id_iniciativa integer NOT NULL,
-  id_partido integer NOT NULL,
+  id_partido integer NOT NULL default 0,
   nombre varchar(255) NOT NULL default 0,
   partido varchar(255) NOT NULL default 0,
   tipo varchar(255) DEFAULT NULL
