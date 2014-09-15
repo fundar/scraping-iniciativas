@@ -88,7 +88,7 @@ if(is_array($explode) and count($explode) > 1) {
 					$iniciativa = $elementos[1];
 					
 					#si no es nulo el elemento
-					if(!is_null($iniciativa[1])) {
+					if(!is_null($iniciativa)) {
 						#obtiene el titulo separado por salto de linea
 						$titulos_array = explode('<br>', $iniciativa);
 						$titulo_array  = explode('</br>', $titulos_array[0]);
@@ -120,11 +120,14 @@ if(is_array($explode) and count($explode) > 1) {
 						
 						#comparamos si es identica e imprime el log
 						if(isSame($iniciativa_array, $IniciativasBD) == false) {
+							#guardo los pasos de la iniciativa en un array
+							$pasos = pasos($iniciativa);
+							
 							#separa en array los enlaces y elimina la primer posicion
 							$enlaces_array = explode('<a href="', $iniciativa);
 							
 							#comprueba que exista el array
-							if(is_array($enlaces_array)) {
+							if(is_array($enlaces_array) and count($enlaces_array) > 1) {
 								unset($enlaces_array[0]);
 								
 								#limipamos los enlaces
@@ -194,6 +197,7 @@ if(is_array($explode) and count($explode) > 1) {
 											$contenido_html = preg_replace("/\r\n+|\r+|\n+|\t+/i", "", $contenido_html);
 											
 											#guardamos el contenido en el array de la iniciativa
+											$iniciativa_array["enlace_gaceta"]             = $baseurl . "/" . $value["href"];
 											$iniciativa_array["contenido_html_iniciativa"] = $contenido_html;
 										} else {
 											$iniciativa_array["enlace_gaceta"] = $baseurl . "/" . $value["href"];
@@ -203,6 +207,8 @@ if(is_array($explode) and count($explode) > 1) {
 									} elseif($value["titulo"] == "Publicado") {
 										$iniciativa_array["enlace_publicado_listado"] = $baseurl . "/" . $value["href"];
 									} elseif(utf8_encode($value["titulo"]) == "Votación") {
+										$iniciativa_array["enlace_votacion"] = $baseurl . "/" . $value["href"];
+										
 										#obtenemos el html de la votación y lo limpiamos
 										curl_setopt($ch, CURLOPT_URL, $baseurl . "/" . $value["href"]);
 										curl_setopt($ch, CURLOPT_TIMEOUT, 30);
@@ -387,7 +393,6 @@ if(is_array($explode) and count($explode) > 1) {
 											}
 										}
 										
-										#to-do falta hacer la petición para saber cuales diputados [nombres] votaron en que sentido
 										foreach($encabezados as $key => $value) {
 											$iniciativa_array["votaciones"][trim($value)] = array(
 												"favor" 	 => trim($tablas3[$key]),
@@ -494,6 +499,64 @@ function isSame($iniciativa, $IniciativasBD) {
 	} else {
 		return false;
 	}
+}
+
+/*obtiene los pasos/estatus que contiene una inicitiava*/
+function pasos($contenido_html) {
+	$contenido_html = strip_tags($contenido_html, '<a><br>');
+	$contenido_html = strip_tags($contenido_html, '<a><br>');
+	
+	$pasos_array 	= explode('<br>', $contenido_html);
+	$pasos          = array();
+	
+	if(is_array($pasos_array) and count($pasos_array) > 1) {
+		unset($pasos_array[0]);
+		
+		foreach($pasos_array as $paso) {
+			$titulo        = $paso;
+			$titulo_limpio = strip_tags($paso, '');
+			
+			$pasos[] = array (
+				"titulo"        => trim($titulo),
+				"titulo_limpio" => trim($titulo_limpio),
+				"tipo" 			=> tipo($titulo_limpio)
+			);
+		}
+		
+		die(var_dump($pasos));
+		return $pasos;
+	}
+	
+	return false;
+}
+
+/*obtiene el tipo de paso/estatus de la iniciativa*/
+function tipo($string = "") {
+	if(strpos($string, "Enviada") !== false) {
+		$tipo = "Enviada";
+	} elseif(strpos($string, "Presentada") !== false) {
+		$tipo = "Presentada";
+	} elseif(strpos($string, "Turnada") !== false) {
+		$tipo = "Turnada";
+	} elseif(strpos($string, "Dictaminada y aprobada") !== false) {
+		$tipo = "Dictaminada y aprobada ";
+	} elseif(strpos($string, "Dictaminada en sentido negativo") !== false) {
+		$tipo = "Dictaminada en sentido negativo";
+	} elseif(strpos($string, "Dictaminada") !== false) {
+		$tipo = "Dictaminada";
+	} elseif(strpos($string, "Publicado") !== false) {
+		$tipo = "Publicado";
+	} elseif(strpos($string, "Devuelta") !== false) {
+		$tipo = "Devuelta";
+	} elseif(strpos($string, "Gaceta Parlamentaria") !== false) {
+		$tipo = "Gaceta Parlamentaria";
+	} elseif(strpos($string, "Se le dispensaron") !== false) {
+		$tipo = "Se le dispensaron todos los trámites";
+	} else {
+		$tipo = "Otro";
+	}
+	
+	return $tipo;
 }
 
 /*

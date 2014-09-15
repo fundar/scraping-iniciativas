@@ -20,6 +20,19 @@ create index on iniciativas_scrapper(id_iniciativa);
 create index on iniciativas_scrapper(id_parent);
 create index on iniciativas_scrapper(id_legislatura);
 
+CREATE TABLE estatus_iniciativas_scrapper (
+  id_estatus serial,
+  id_iniciativa integer not null,
+  titulo text DEFAULT NULL,
+  titulo_limpio text DEFAULT NULL,
+  tipo varchar(255) DEFAULT NULL,
+  votacion boolean default false
+);
+create index on estatus_iniciativas_scrapper(id_estatus);
+create index on estatus_iniciativas_scrapper(id_iniciativa);
+create index on estatus_iniciativas_scrapper(tipo);
+create index on estatus_iniciativas_scrapper(votacion);
+
 CREATE TABLE votaciones_partidos_scrapper (
   id_voto serial,
   id_contador_voto integer not null default 1,
