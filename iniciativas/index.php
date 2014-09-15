@@ -120,8 +120,8 @@ if(is_array($explode) and count($explode) > 1) {
 						
 						#comparamos si es identica e imprime el log
 						if(isSame($iniciativa_array, $IniciativasBD) == false) {
-							#guardo los pasos de la iniciativa en un array
-							$pasos = pasos($iniciativa);
+							#guardo los pasos/estatus de la iniciativa en un array
+							$iniciativa_array["estatus"] = pasos($iniciativa);
 							
 							#separa en array los enlaces y elimina la primer posicion
 							$enlaces_array = explode('<a href="', $iniciativa);
@@ -207,8 +207,6 @@ if(is_array($explode) and count($explode) > 1) {
 									} elseif($value["titulo"] == "Publicado") {
 										$iniciativa_array["enlace_publicado_listado"] = $baseurl . "/" . $value["href"];
 									} elseif(utf8_encode($value["titulo"]) == "Votación") {
-										$iniciativa_array["enlace_votacion"] = $baseurl . "/" . $value["href"];
-										
 										#obtenemos el html de la votación y lo limpiamos
 										curl_setopt($ch, CURLOPT_URL, $baseurl . "/" . $value["href"]);
 										curl_setopt($ch, CURLOPT_TIMEOUT, 30);
@@ -451,6 +449,24 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 			echo "\n\n########################## \n";
 				echo "\n " . $contador . ".- Iniciativa ya existe pero tiene modificaciones: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
 				echo "El ID de esta iniciativa es: " . $id_iniciativa["id_iniciativa"] . "\n";
+				
+				#guardamos los pasos/estatus de la iniciativa
+				$estatus  = $IniciativasBD->guardarEstatus($id_iniciativa, $iniciativa["estatus"]);
+				
+				#compruebo que existan votaciones para guardarlas en la base de datos, guarda tambipen los nombres de los representantes
+				if(isset($iniciativa["votaciones"])) {
+					$votacion  = $IniciativasBD->guardarVotacion($id_iniciativa, $iniciativa["votaciones"]);
+					$votos_nom = $IniciativasBD->guardarVotacionNombres($id_iniciativa, $iniciativa["votos_nombres"]);
+					
+					if($votacion === true) {
+						echo "**** Votación Guardada ****\n";
+					} else {
+						echo "**** Votación NO Guardada ****\n";
+					}
+				} else {
+					echo "**** No hay votación ****\n";
+				}
+				
 			echo "########################## \n\n";
 		} else {
 			#aumentamos el contador de iniciativas guardadas e imprimimos el log
@@ -459,6 +475,9 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 			echo "\n\n##########################";
 				echo "\n " . $contador . ".- Iniciativa Guardada: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
 				echo "El ID de esta iniciativa es: " . $id_iniciativa . "\n";
+				
+				#guardamos los pasos/estatus de la iniciativa
+				$estatus  = $IniciativasBD->guardarEstatus($id_iniciativa, $iniciativa["estatus"]);
 				
 				#compruebo que existan votaciones para guardarlas en la base de datos, guarda tambipen los nombres de los representantes
 				if(isset($iniciativa["votaciones"])) {
@@ -486,6 +505,7 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 	return $contador;
 }
 
+/*comprueba si la iniciativa ya existe y es identica*/
 function isSame($iniciativa, $IniciativasBD) {
 	$result = $IniciativasBD->isSame($iniciativa);	
 	
@@ -516,18 +536,27 @@ function pasos($contenido_html) {
 			$titulo        = $paso;
 			$titulo_limpio = strip_tags($paso, '');
 			
-			$pasos[] = array (
+			$pasos[] = array(
 				"titulo"        => trim($titulo),
 				"titulo_limpio" => trim($titulo_limpio),
-				"tipo" 			=> tipo($titulo_limpio)
+				"tipo" 			=> tipo($titulo_limpio),
+				"votacion"      => esVotacion($titulo_limpio)
 			);
 		}
 		
-		die(var_dump($pasos));
 		return $pasos;
 	}
 	
 	return false;
+}
+
+/*Comprueba si en el string se tiene una votación*/
+function esVotacion($string = "") {
+	if(strpos(utf8_encode($string), "Votación") !== false) {
+		return "true";
+	} else {
+		return "false";
+	}
 }
 
 /*obtiene el tipo de paso/estatus de la iniciativa*/
@@ -551,7 +580,9 @@ function tipo($string = "") {
 	} elseif(strpos($string, "Gaceta Parlamentaria") !== false) {
 		$tipo = "Gaceta Parlamentaria";
 	} elseif(strpos($string, "Se le dispensaron") !== false) {
-		$tipo = "Se le dispensaron todos los trámites";
+		$tipo = utf8_decode("Se le dispensaron todos los trámites");
+	} elseif(strpos($string, "Aprobada") !== false) {
+		$tipo = "Aprobada";
 	} else {
 		$tipo = "Otro";
 	}

@@ -26,6 +26,11 @@ class Iniciativas {
 				unset($iniciativa["votos_nombres"]);
 			}
 			
+			#eliminamos arrays de estatus para solo dejar lo de iniciativas
+			if(isset($iniciativa["estatus"])) {
+				unset($iniciativa["estatus"]);
+			}
+			
 			#La guarda pero con un id_parten 0
 			$iniciativa["id_parent"] = 0;
 			$id_iniciativa 		     = $this->save("iniciativas_scrapper", $iniciativa, "id_iniciativa");
@@ -45,6 +50,28 @@ class Iniciativas {
 			} else {
 				return false;
 			}
+		}
+	}
+	
+	/*guardamos los pasos/estatus de la iniciativa*/
+	public function guardarEstatus($id_iniciativa = false, $estatus) {
+		#compruebo que no este en falso la iniciativa
+		if($id_iniciativa != false) {
+			#recorro los estatus para guardar uno por uno
+			foreach($estatus as $key => $value) {
+				#formo el query para los estatys
+				$query  = "insert into estatus_iniciativas_scrapper";
+				$fields = "(id_iniciativa, titulo, titulo_limpio, tipo, votacion) ";
+				$values = "(" . $id_iniciativa . ",'" . $value["titulo"] . "','" .  $value["titulo_limpio"] . "','" .  $value["tipo"] . "'," .  $value["votacion"] . ")";
+				
+				#inserto el registro en la base de datos
+				$query    = utf8_encode($query . " " . $fields . " values " . $values);
+				$estatus  = $this->pgsql->query($query);
+			}
+			
+			return true;
+		} else {
+			return false;
 		}
 	}
 	

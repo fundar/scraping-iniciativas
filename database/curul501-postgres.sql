@@ -23,6 +23,7 @@ create index on iniciativas_scrapper(id_legislatura);
 CREATE TABLE estatus_iniciativas_scrapper (
   id_estatus serial,
   id_iniciativa integer not null,
+  id_tipo integer not null default null,
   titulo text DEFAULT NULL,
   titulo_limpio text DEFAULT NULL,
   tipo varchar(255) DEFAULT NULL,
@@ -107,3 +108,8 @@ CREATE TABLE representative_type (
 );
 create index on representative_type(id_representative_type);
 create index on representative_type(name);
+
+truncate table votaciones_partidos_scrapper;
+truncate table iniciativas_scrapper;
+truncate table votaciones_representantes_scrapper;
+truncate table estatus_iniciativas_scrapper;
