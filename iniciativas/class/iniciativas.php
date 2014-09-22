@@ -18,19 +18,19 @@ class Iniciativas {
 	public function guardar($iniciativa) {
 		$data = $this->isExists($iniciativa);
 		
+		#eliminamos arrays de votaciones para solo dejar lo de iniciativas
+		if(isset($iniciativa["votaciones"])) {
+			unset($iniciativa["votaciones"]);
+			unset($iniciativa["votos_nombres"]);
+		}
+		
+		#eliminamos arrays de estatus para solo dejar lo de iniciativas
+		if(isset($iniciativa["estatus"])) {
+			unset($iniciativa["estatus"]);
+		}
+			
 		#si no existe la guarda por primera
 		if($data == false) {
-			#eliminamos arrays de votaciones para solo dejar lo de iniciativas
-			if(isset($iniciativa["votaciones"])) {
-				unset($iniciativa["votaciones"]);
-				unset($iniciativa["votos_nombres"]);
-			}
-			
-			#eliminamos arrays de estatus para solo dejar lo de iniciativas
-			if(isset($iniciativa["estatus"])) {
-				unset($iniciativa["estatus"]);
-			}
-			
 			#La guarda pero con un id_parten 0
 			$iniciativa["id_parent"] = 0;
 			$id_iniciativa 		     = $this->save("iniciativas_scrapper", $iniciativa, "id_iniciativa");
