@@ -8,11 +8,12 @@ echo "Iniciando scrapping .... esperar \n\n";
 $ch      = curl_init();
 $baseurl = "http://gaceta.diputados.gob.mx";
 
+#ver la tabla de legislaturas del admin 1 = LXII
+$id_legislatura = 1; 
+
 /*datos iniciales periodo y url de la lista de iniciativas*/
-/*
 $periodo = 'Primer periodo ordinario';
 $url     = "/Gaceta/Iniciativas/62/gp62_a2primero.html";
-*/
 
 /*datos iniciales periodo y url de la lista de iniciativas*/
 /*
@@ -20,10 +21,11 @@ $periodo        = '1er. periodo Com. Permanente';
 $url            = "/Gaceta/Iniciativas/62/gp62_a2perma1.html";
 */
 
-$id_legislatura = 1; #ver la tabla de legislaturas del admin 1 = LXII
-
+/*datos iniciales periodo y url de la lista de iniciativas*/
+/*
 $periodo        = 'Primer periodo ordinario';
 $url            = "/Gaceta/Iniciativas/62/gp62_a3primero.html";
+*/
 
 #Curl a la primera parte de las iniciativas legislatura 62
 curl_setopt($ch, CURLOPT_URL, $baseurl . $url);
@@ -86,7 +88,7 @@ if(is_array($explode) and count($explode) > 1) {
 					$iniciativa = $elementos[1];
 					
 					#si no es nulo el elemento
-					if(!is_null($iniciativa[1])) {
+					if(!is_null($iniciativa)) {
 						#obtiene el titulo separado por salto de linea
 						$titulos_array = explode('<br>', $iniciativa);
 						$titulo_array  = explode('</br>', $titulos_array[0]);
@@ -118,11 +120,14 @@ if(is_array($explode) and count($explode) > 1) {
 						
 						#comparamos si es identica e imprime el log
 						if(isSame($iniciativa_array, $IniciativasBD) == false) {
+							#guardo los pasos/estatus de la iniciativa en un array
+							$iniciativa_array["estatus"] = pasos($iniciativa);
+							
 							#separa en array los enlaces y elimina la primer posicion
 							$enlaces_array = explode('<a href="', $iniciativa);
 							
 							#comprueba que exista el array
-							if(is_array($enlaces_array)) {
+							if(is_array($enlaces_array) and count($enlaces_array) > 1) {
 								unset($enlaces_array[0]);
 								
 								#limipamos los enlaces
@@ -146,6 +151,11 @@ if(is_array($explode) and count($explode) > 1) {
 										"titulo" => $texto_enlace[0]
 									);
 								}
+								
+								$count_votacion = 0;
+								#array de votaciones
+								$iniciativa_array["votaciones"]    = array();
+								$iniciativa_array["votos_nombres"] = array();
 								
 								foreach($enlances as $value) {
 									if($value["titulo"] == "Gaceta Parlamentaria") {
@@ -192,6 +202,7 @@ if(is_array($explode) and count($explode) > 1) {
 											$contenido_html = preg_replace("/\r\n+|\r+|\n+|\t+/i", "", $contenido_html);
 											
 											#guardamos el contenido en el array de la iniciativa
+											$iniciativa_array["enlace_gaceta"]             = $baseurl . "/" . $value["href"];
 											$iniciativa_array["contenido_html_iniciativa"] = $contenido_html;
 										} else {
 											$iniciativa_array["enlace_gaceta"] = $baseurl . "/" . $value["href"];
@@ -274,10 +285,6 @@ if(is_array($explode) and count($explode) > 1) {
 										$encabezados = explode('<td>', trim($tablas_votacion[2]));
 										unset($encabezados[0]);
 										unset($encabezados[1]);
-										
-										#array de votaciones
-										$iniciativa_array["votaciones"]    = array();
-										$iniciativa_array["votos_nombres"] = array();
 										
 										#arrays de votaciones - renglones
 										$tablas3 = explode('<td>', trim($tablas_votacion[3]));
@@ -379,15 +386,16 @@ if(is_array($explode) and count($explode) > 1) {
 													}
 													
 													if($count >= 1) {
-														$iniciativa_array["votos_nombres"][$tipo][$partido] = $lista_array;
+														$iniciativa_array["votos_nombres"][$count_votacion][$tipo][$partido] = $lista_array;
 													}
 												}
 											}
 										}
 										
-										#to-do falta hacer la petición para saber cuales diputados [nombres] votaron en que sentido
+										$array_votaciones2 = array();
+										
 										foreach($encabezados as $key => $value) {
-											$iniciativa_array["votaciones"][trim($value)] = array(
+											$array_votaciones2[trim($value)] = array(
 												"favor" 	 => trim($tablas3[$key]),
 												"contra" 	 => trim($tablas4[$key]),
 												"abstencion" => trim($tablas5[$key]),
@@ -396,7 +404,15 @@ if(is_array($explode) and count($explode) > 1) {
 												"total"		 => trim($tablas8[$key])
 											);
 										}
+										
+										$iniciativa_array["votaciones"][$count_votacion] = $array_votaciones2;
+										$count_votacion++;
 									}
+								}
+								
+								if($count_votacion == 0) {
+									unset($iniciativa_array["votaciones"]);
+									unset($iniciativa_array["votos_nombres"]);
 								}
 							}
 							
@@ -444,6 +460,24 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 			echo "\n\n########################## \n";
 				echo "\n " . $contador . ".- Iniciativa ya existe pero tiene modificaciones: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
 				echo "El ID de esta iniciativa es: " . $id_iniciativa["id_iniciativa"] . "\n";
+				
+				#guardamos los pasos/estatus de la iniciativa
+				$estatus  = $IniciativasBD->guardarEstatus($id_iniciativa, $iniciativa["estatus"]);
+				
+				#compruebo que existan votaciones para guardarlas en la base de datos, guarda tambipen los nombres de los representantes
+				if(isset($iniciativa["votaciones"])) {
+					$votacion  = $IniciativasBD->guardarVotacion($id_iniciativa, $iniciativa["votaciones"]);
+					$votos_nom = $IniciativasBD->guardarVotacionNombres($id_iniciativa, $iniciativa["votos_nombres"]);
+					
+					if($votacion === true) {
+						echo "**** Votación Guardada ****\n";
+					} else {
+						echo "**** Votación NO Guardada ****\n";
+					}
+				} else {
+					echo "**** No hay votación ****\n";
+				}
+				
 			echo "########################## \n\n";
 		} else {
 			#aumentamos el contador de iniciativas guardadas e imprimimos el log
@@ -452,6 +486,9 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 			echo "\n\n##########################";
 				echo "\n " . $contador . ".- Iniciativa Guardada: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
 				echo "El ID de esta iniciativa es: " . $id_iniciativa . "\n";
+				
+				#guardamos los pasos/estatus de la iniciativa
+				$estatus  = $IniciativasBD->guardarEstatus($id_iniciativa, $iniciativa["estatus"]);
 				
 				#compruebo que existan votaciones para guardarlas en la base de datos, guarda tambipen los nombres de los representantes
 				if(isset($iniciativa["votaciones"])) {
@@ -479,6 +516,7 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 	return $contador;
 }
 
+/*comprueba si la iniciativa ya existe y es identica*/
 function isSame($iniciativa, $IniciativasBD) {
 	$result = $IniciativasBD->isSame($iniciativa);	
 	
@@ -492,6 +530,75 @@ function isSame($iniciativa, $IniciativasBD) {
 	} else {
 		return false;
 	}
+}
+
+/*obtiene los pasos/estatus que contiene una inicitiava*/
+function pasos($contenido_html) {
+	$contenido_html = strip_tags($contenido_html, '<a><br>');
+	$contenido_html = strip_tags($contenido_html, '<a><br>');
+	
+	$pasos_array 	= explode('<br>', $contenido_html);
+	$pasos          = array();
+	
+	if(is_array($pasos_array) and count($pasos_array) > 1) {
+		unset($pasos_array[0]);
+		
+		foreach($pasos_array as $paso) {
+			$titulo        = $paso;
+			$titulo_limpio = strip_tags($paso, '');
+			
+			$pasos[] = array(
+				"titulo"        => trim($titulo),
+				"titulo_limpio" => trim($titulo_limpio),
+				"tipo" 			=> tipo($titulo_limpio),
+				"votacion"      => esVotacion($titulo_limpio)
+			);
+		}
+		
+		return $pasos;
+	}
+	
+	return false;
+}
+
+/*Comprueba si en el string se tiene una votación*/
+function esVotacion($string = "") {
+	if(strpos(utf8_encode($string), "Votación") !== false) {
+		return "true";
+	} else {
+		return "false";
+	}
+}
+
+/*obtiene el tipo de paso/estatus de la iniciativa*/
+function tipo($string = "") {
+	if(strpos($string, "Enviada") !== false) {
+		$tipo = "Enviada";
+	} elseif(strpos($string, "Presentada") !== false) {
+		$tipo = "Presentada";
+	} elseif(strpos($string, "Turnada") !== false) {
+		$tipo = "Turnada";
+	} elseif(strpos($string, "Dictaminada y aprobada") !== false) {
+		$tipo = "Dictaminada y aprobada ";
+	} elseif(strpos($string, "Dictaminada en sentido negativo") !== false) {
+		$tipo = "Dictaminada en sentido negativo";
+	} elseif(strpos($string, "Dictaminada") !== false) {
+		$tipo = "Dictaminada";
+	} elseif(strpos($string, "Publicado") !== false) {
+		$tipo = "Publicado";
+	} elseif(strpos($string, "Devuelta") !== false) {
+		$tipo = "Devuelta";
+	} elseif(strpos($string, "Gaceta Parlamentaria") !== false) {
+		$tipo = "Gaceta Parlamentaria";
+	} elseif(strpos($string, "Se le dispensaron") !== false) {
+		$tipo = utf8_decode("Se le dispensaron todos los trámites");
+	} elseif(strpos($string, "Aprobada") !== false) {
+		$tipo = "Aprobada";
+	} else {
+		$tipo = "Otro";
+	}
+	
+	return $tipo;
 }
 
 /*
