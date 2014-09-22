@@ -123,7 +123,7 @@ CREATE TABLE tags (
   id_tag serial,
   name varchar(255) NOT NULL,
   slug varchar(255) NOT NULL,
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  created_at timestamp
 );
 create index on tags(id_tag);
 
@@ -132,8 +132,8 @@ CREATE TABLE commissions (
   id_commission serial,
   name varchar(255) NOT NULL,
   slug varchar(255) NOT NULL,
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  created_at timestamp,
+  updated_at timestamp,
   status boolean NOT NULL DEFAULT true,
   secretario varchar(255) NOT NULL
 );
@@ -193,8 +193,8 @@ CREATE TABLE initiatives (
   turned_to text DEFAULT NULL,
   submitted_to text DEFAULT NULL,
   period varchar(255) DEFAULT NULL,
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  created_at timestamp,
+  updated_at timestamp
 );
 create index on initiatives(id_initiative);
 create index on initiatives(id_parent);
@@ -228,6 +228,24 @@ CREATE TABLE initiatives2tags (
 );
 create index on initiatives2tags(id_initiative);
 create index on initiatives2tags(id_tag);
+
+CREATE TABLE initiatives2status (
+  id_initiative integer NOT NULL,
+  id_status integer NOT NULL,
+  description text NOT NULL,
+  created_at timestamp,
+  status boolean NOT NULL DEFAULT true
+);
+create index on initiatives2status(id_initiative);
+create index on initiatives2status(id_status);
+
+CREATE TABLE status (
+  id_status serial,
+  name varchar(255) NOT NULL,
+  slug varchar(255) NOT NULL,
+  description text NOT NULL
+);
+create index on status(id_status);
 
 --Votaciones
 CREATE TABLE vote_political_party (
@@ -267,7 +285,7 @@ CREATE TABLE legislatures (
   id_legislature serial,
   name varchar(255) NOT NULL,
   slug varchar(255) NOT NULL,
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  created_at timestamp,
   active boolean NOT NULL DEFAULT true
 );
 create index on legislatures(id_legislature);
@@ -276,7 +294,7 @@ create index on legislatures(id_legislature);
 CREATE TABLE logs (
   id_log integer,
   id_user integer NOT NULL DEFAULT 0,
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  created_at timestamp,
   action varchar(45) NOT NULL,
   ip varchar(45) NOT NULL,
   url varchar(255) NOT NULL
@@ -286,18 +304,19 @@ create index on logs(id_user);
 
 --Partidos politicos
 CREATE TABLE political_parties (
-  id_political_party serial
+  id_political_party serial,
   name varchar(255) NOT NULL,
   slug varchar(255) NOT NULL,
   short_name varchar(255) NOT NULL,
   url_logo varchar(255) NOT NULL,
   active boolean NOT NULL DEFAULT true,
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  created_at timestamp
 );
 create index on political_parties(id_political_party);
 
 --Representantes
-CREATE TABLE representatives_scrapper (
+
+CREATE TABLE representatives (
   id_representative serial,
   id_representative_type integer not null,
   name varchar(255) DEFAULT NULL,
@@ -323,9 +342,9 @@ CREATE TABLE representatives_scrapper (
   commisions varchar(255) DEFAULT NULL,
   suplentede varchar(255) DEFAULT NULL
 );
-create index on representatives_scrapper(id_iniciativa);
-create index on representatives_scrapper(id_representative_type);
-create index on representatives_scrapper(id_legislature);
+create index on representatives(id_iniciativa);
+create index on representatives(id_representative_type);
+create index on representatives(id_legislature);
 
  
 CREATE TABLE representative_type (
@@ -342,8 +361,8 @@ CREATE TABLE topics (
   name varchar(255) NOT NULL,
   slug varchar(255) NOT NULL,
   description text,
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  created_at timestamp,
+  updated_at timestamp
 );
 create index on topics(id_topic);
 
@@ -355,7 +374,7 @@ CREATE TABLE users (
   email varchar(255) NOT NULL,
   password varchar(255) NOT NULL,
   name varchar(255) DEFAULT NULL,
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  created_at timestamp,
   admin boolean NOT NULL DEFAULT false,
   type varchar(45) NOT NULL DEFAULT 'member',
   active boolean NOT NULL DEFAULT true,
@@ -367,17 +386,17 @@ create index on users(id_user);
 --Visitas
 CREATE TABLE visits2initiatives (
   id_visit serial,
-  id_initiative int(11) NOT NULL,
+  id_initiative integer NOT NULL,
   ip varchar(45) NOT NULL,
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  created_at timestamp
 );
 create index on visits2initiatives(id_visit);
 
 CREATE TABLE visits2representatives (
   id_visit serial,
-  id_representative int(11) NOT NULL,
+  id_representative integer NOT NULL,
   ip varchar(45) NOT NULL,
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  created_at timestamp
 );
 create index on visits2representatives(id_visit);
 
