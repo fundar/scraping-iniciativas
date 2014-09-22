@@ -152,6 +152,11 @@ if(is_array($explode) and count($explode) > 1) {
 									);
 								}
 								
+								$count_votacion = 0;
+								#array de votaciones
+								$iniciativa_array["votaciones"]    = array();
+								$iniciativa_array["votos_nombres"] = array();
+								
 								foreach($enlances as $value) {
 									if($value["titulo"] == "Gaceta Parlamentaria") {
 										$ancla = explode("#", $value["href"]);
@@ -281,10 +286,6 @@ if(is_array($explode) and count($explode) > 1) {
 										unset($encabezados[0]);
 										unset($encabezados[1]);
 										
-										#array de votaciones
-										$iniciativa_array["votaciones"]    = array();
-										$iniciativa_array["votos_nombres"] = array();
-										
 										#arrays de votaciones - renglones
 										$tablas3 = explode('<td>', trim($tablas_votacion[3]));
 										$tablas4 = explode('<td>', trim($tablas_votacion[4]));
@@ -385,14 +386,16 @@ if(is_array($explode) and count($explode) > 1) {
 													}
 													
 													if($count >= 1) {
-														$iniciativa_array["votos_nombres"][$tipo][$partido] = $lista_array;
+														$iniciativa_array["votos_nombres"][$count_votacion][$tipo][$partido] = $lista_array;
 													}
 												}
 											}
 										}
 										
+										$array_votaciones2 = array();
+										
 										foreach($encabezados as $key => $value) {
-											$iniciativa_array["votaciones"][trim($value)] = array(
+											$array_votaciones2[trim($value)] = array(
 												"favor" 	 => trim($tablas3[$key]),
 												"contra" 	 => trim($tablas4[$key]),
 												"abstencion" => trim($tablas5[$key]),
@@ -401,7 +404,15 @@ if(is_array($explode) and count($explode) > 1) {
 												"total"		 => trim($tablas8[$key])
 											);
 										}
+										
+										$iniciativa_array["votaciones"][$count_votacion] = $array_votaciones2;
+										$count_votacion++;
 									}
+								}
+								
+								if($count_votacion == 0) {
+									unset($iniciativa_array["votaciones"]);
+									unset($iniciativa_array["votos_nombres"]);
 								}
 							}
 							

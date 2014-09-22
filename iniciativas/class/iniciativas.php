@@ -80,17 +80,20 @@ class Iniciativas {
 		#compruebo que no este en falso la iniciativa
 		if($id_iniciativa != false) {
 			#recorro los tipos de votos para guardar uno por uno
-			foreach($votacion as $key => $voto) {
-				#formo el query para las votaciones
-				$query  = "insert into votaciones_partidos_scrapper";
-				$fields = "(id_iniciativa, tipo, favor, contra, abstencion, quorum, ausente, total) ";
-				
-				$values  = "(" . $id_iniciativa . ",'" . $key . "'," . $voto["favor"] . "," .  $voto["contra"] . "," .  $voto["abstencion"] . ",";
-				$values .= $voto["quorum"] . "," .  $voto["ausente"] . "," .  $voto["total"] . ")";
-				
-				#inserto el registro en la base de datos
-				$query = utf8_encode($query . " " . $fields . " values " . $values);
-				$voto  = $this->pgsql->query($query);
+			foreach($votacion as $key2 => $voto2) {
+				foreach($voto2 as $key => $voto) {
+					#formo el query para las votaciones
+					$query  = "insert into votaciones_partidos_scrapper";
+					$fields = "(id_contador_voto, id_iniciativa, tipo, favor, contra, abstencion, quorum, ausente, total) ";
+					
+					$contador = $key2+1;
+					$values   = "(" . $contador . "," . $id_iniciativa . ",'" . $key . "'," . $voto["favor"] . "," .  $voto["contra"] . "," .  $voto["abstencion"] . ",";
+					$values  .= $voto["quorum"] . "," .  $voto["ausente"] . "," .  $voto["total"] . ")";
+					
+					#inserto el registro en la base de datos
+					$query = utf8_encode($query . " " . $fields . " values " . $values);
+					$voto  = $this->pgsql->query($query);
+				}
 			}
 			
 			return true;
@@ -104,21 +107,23 @@ class Iniciativas {
 		#compruebo que no este en falso la iniciativa
 		if($id_iniciativa != false) {
 			#recorro los tipos de votos para guardar uno por uno, recorre los tipos de votos y los nombres de representantes
-			foreach($votos as $key_tipo => $voto) {
-				foreach($voto as $key_partido => $tipo) {
-					foreach($tipo as $key_nombre => $nombre) {
-						#formo el query para las votaciones
-						$query  = "insert into votaciones_representantes_scrapper";
-						$fields = "(id_iniciativa, nombre, partido, tipo) ";
-						$values = "(" . $id_iniciativa . ",'" . $nombre . "','" . $key_partido . "','" .  $key_tipo . "')";
-						
-						#inserto el registro en la base de datos
-						$query  = utf8_encode($query . " " . $fields . " values " . $values);
-						$result = $this->pgsql->query($query);
+			foreach($votos as $key2 => $voto2) {
+				foreach($voto2 as $key_tipo => $voto) {
+					foreach($voto as $key_partido => $tipo) {
+						foreach($tipo as $key_nombre => $nombre) {
+							#formo el query para las votaciones
+							$contador = $key2+1;
+							$query    = "insert into votaciones_representantes_scrapper";
+							$fields   = "(id_contador_voto, id_iniciativa, nombre, partido, tipo) ";
+							$values   = "(" . $contador . "," . $id_iniciativa . ",'" . $nombre . "','" . $key_partido . "','" .  $key_tipo . "')";
+							
+							#inserto el registro en la base de datos
+							$query  = utf8_encode($query . " " . $fields . " values " . $values);
+							$result = $this->pgsql->query($query);
+						}
 					}
 				}
 			}
-			
 			return true;
 		} else {
 			return false;
