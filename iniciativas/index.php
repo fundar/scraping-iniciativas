@@ -27,7 +27,7 @@ $periodo        = 'Primer periodo ordinario';
 $url            = "/Gaceta/Iniciativas/62/gp62_a3primero.html";
 */
 
-#Curl a la primera parte de las iniciativas legislatura 62
+#Curl a las iniciativas legislatura 62
 curl_setopt($ch, CURLOPT_URL, $baseurl . $url);
 curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
