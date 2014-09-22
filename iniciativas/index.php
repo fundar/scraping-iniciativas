@@ -462,12 +462,12 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 				echo "El ID de esta iniciativa es: " . $id_iniciativa["id_iniciativa"] . "\n";
 				
 				#guardamos los pasos/estatus de la iniciativa
-				$estatus  = $IniciativasBD->guardarEstatus($id_iniciativa, $iniciativa["estatus"]);
+				$estatus  = $IniciativasBD->guardarEstatus($id_iniciativa["id_iniciativa"], $iniciativa["estatus"]);
 				
 				#compruebo que existan votaciones para guardarlas en la base de datos, guarda tambipen los nombres de los representantes
 				if(isset($iniciativa["votaciones"])) {
-					$votacion  = $IniciativasBD->guardarVotacion($id_iniciativa, $iniciativa["votaciones"]);
-					$votos_nom = $IniciativasBD->guardarVotacionNombres($id_iniciativa, $iniciativa["votos_nombres"]);
+					$votacion  = $IniciativasBD->guardarVotacion($id_iniciativa["id_iniciativa"], $iniciativa["votaciones"]);
+					$votos_nom = $IniciativasBD->guardarVotacionNombres($id_iniciativa["id_iniciativa"], $iniciativa["votos_nombres"]);
 					
 					if($votacion === true) {
 						echo "**** Votación Guardada ****\n";
