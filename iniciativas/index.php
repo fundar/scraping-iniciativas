@@ -156,7 +156,7 @@ foreach($array_periodos as $periodo) {
 							$iniciativa_array["titulo_listado"] = $titulo_listado;
 							$iniciativa_array["html_listado"]   = $iniciativa;
 							$iniciativa_array["periodo"]        = $periodo["periodo"];
-							$iniciativa_array["id_legislatura"] = $id_legislatura;
+							$iniciativa_array["id_legislature"] = $id_legislatura;
 							
 							#comparamos si es identica e imprime el log
 							if(isSame($iniciativa_array, $IniciativasBD) == false) {
