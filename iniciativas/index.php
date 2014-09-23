@@ -3,6 +3,7 @@
 <?php
 #php index.php -> logs/iniciativas-date-time.log &
 
+echo "Hora y fecha actual de inicio: " . date("Y-m-d H:i:s") . "\n";
 echo "Iniciando scrapping .... esperar \n\n";
 
 $ch      = curl_init();
@@ -11,83 +12,8 @@ $baseurl = "http://gaceta.diputados.gob.mx";
 #ver la tabla de legislaturas del admin 1 = LXII
 $id_legislatura = 1; 
 
-#array de periodos
-$array_periodos = array();
-
-/*Primer año*/
-$array_periodos[] = array(
-	"periodo" => 'Primer periodo ordinario',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a1primero.html",
-	"ano"     => "Primer año"
-);
-
-$array_periodos[] = array(
-	"periodo" => '1er. periodo Com. Permanente',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a1perma1.html",
-	"ano"     => "Primer año"
-);
-
-$array_periodos[] = array(
-	"periodo" => 'Segundo periodo ordinario',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a1segundo.html",
-	"ano"     => "Primer año"
-);
-
-$array_periodos[] = array(
-	"periodo" => 'Primer periodo ordinario',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a1perma2.html",
-	"ano"     => "2o. periodo Com. Permanente "
-);
-
-/*Segundo año*/
-$array_periodos[] = array(
-	"periodo" => 'Primer periodo ordinario',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a2primero.html",
-	"ano"     => "Segundo año"
-);
-
-$array_periodos[] = array(
-	"periodo" => '1er. periodo Com. Permanente',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a2perma1.html",
-	"ano"     => "Segundo año"
-);
-
-$array_periodos[] = array(
-	"periodo" => 'Segundo periodo ordinario',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a2segundo.html",
-	"ano"     => "Segundo año"
-);
-
-$array_periodos[] = array(
-	"periodo" => '2o. periodo Com. Permanente',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a2perma2.html",
-	"ano"     => "Segundo año"
-);
-
-$array_periodos[] = array(
-	"periodo" => 'Primer periodo extraordinario',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a2extra1.html",
-	"ano"     => "Segundo año"
-);
-
-$array_periodos[] = array(
-	"periodo" => 'Segundo periodo extraordinario',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a2extra2.html",
-	"ano"     => "Segundo año"
-);
-
-$array_periodos[] = array(
-	"periodo" => 'Cuarto periodo extraordinario',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a2extra4.html",
-	"ano"     => "Segundo año"
-);
-
-/*Tercer año*/
-$array_periodos[] = array(
-	"periodo" => 'Primer periodo ordinario',
-	"url"     => "/Gaceta/Iniciativas/62/gp62_a3primero.html",
-	"ano"     => "Tercer año"
-);
+#incluir array de periodos
+include_once "class/config/array_periodos.php";
 
 #conexión a la base de datos
 $IniciativasBD = false;
@@ -183,6 +109,7 @@ foreach($array_periodos as $periodo) {
 							$iniciativa_array["titulo_listado"] = $titulo_listado;
 							$iniciativa_array["html_listado"]   = $iniciativa;
 							$iniciativa_array["periodo"]        = $periodo["periodo"];
+							$iniciativa_array["ano"]        	= $periodo["ano"];
 							$iniciativa_array["id_legislature"] = $id_legislatura;
 							
 							#comparamos si es identica e imprime el log
@@ -494,14 +421,15 @@ foreach($array_periodos as $periodo) {
 			#separación de grupos
 			echo "\n\n ......................................................... \n\n";
 		}
-		
-		#mensaje de termino de scrapping
-		echo "\n\n El scrapping ha terminado, total de iniciativas guardadas: " . $contador . " - Revisa la base de datos #MezcalSinControl :) \n\n";
 	} else {
 		echo "\n\n Algo extraño ocurrio :/ \n\n";
 		die("");
 	}
 }
+
+#mensaje de termino de scrapping
+echo "\n\nEl scrapping ha terminado, total de iniciativas guardadas: " . $contador . " - Revisa la base de datos #MezcalSinControl :)\n";
+echo "Hora y fecha actual del fin: " . date("Y-m-d H:i:s") . "\n";
 
 #incluye los archivos y crea la conexión a la base de datos
 function conexionBD() {
@@ -662,31 +590,13 @@ function tipo($string = "") {
 		$tipo = utf8_decode("Se le dispensaron todos los trámites");
 	} elseif(strpos($string, "Aprobada") !== false) {
 		$tipo = "Aprobada";
+	} elseif(strpos(utf8_encode($string), "Prórroga") !== false) {
+		$tipo = utf8_decode("Prórroga");
+	}elseif(strpos($string, "Precluida") !== false) {
+		$tipo = "Precluida";
 	} else {
 		$tipo = "Otro";
 	}
 	
 	return $tipo;
 }
-
-/*
-+---------------------------+--------------+------+-----+---------+----------------+
-| Field                     | Type         | Null | Key | Default | Extra          |
-+---------------------------+--------------+------+-----+---------+----------------+
-| id_iniciativa             | int(11)      | NO   | PRI | NULL    | auto_increment |
-| id_legislatura            | int(11)      | NO   |     | NULL    |                |
-| fecha_listado_tm          | timestamp    | YES  |     | NULL    |                |
-| fecha_listado             | varchar(255) | YES  |     | NULL    |                |
-| titulo                    | text         | YES  |     | NULL    |                |
-| titulo_listado            | text         | YES  |     | NULL    |                |
-| enlace_dictamen_listado   | varchar(255) | YES  |     | NULL    |                |
-| enlace_publicado_listado  | varchar(255) | YES  |     | NULL    |                |
-| enlace_gaceta             | varchar(255) | YES  |     | NULL    |                |
-| html_listado              | text         | YES  |     | NULL    |                |
-| contenido_html_iniciativa | text         | YES  |     | NULL    |                |
-| enviada                   | text         | YES  |     | NULL    |                |
-| turnada                   | text         | YES  |     | NULL    |                |
-| presentada                | text         | YES  |     | NULL    |                |
-| periodo                   | varchar(255) | YES  |     | NULL    |                |
-+---------------------------+--------------+------+-----+---------+----------------+
-*/
