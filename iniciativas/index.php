@@ -64,6 +64,7 @@ $array_periodos[] = array(
 );
 
 #conexión a la base de datos
+$IniciativasBD = false;
 $IniciativasBD = conexionBD();
 
 foreach($array_periodos as $periodo) {
@@ -82,7 +83,6 @@ foreach($array_periodos as $periodo) {
 	#Hacemos el explode de este codigo que delimita las fechas de seeciones de las iniciativas con titulos rojos
 	$explode       = explode('<font color="#CC0000">', $resultado);
 	$iniciativas   = array();
-	$IniciativasBD = false;
 	$contador      = 0;
 
 	#si exsite un array y es mayor a 1 si no "algo anda mal" by pacojaso! y  eliminamos la primiera posicion no nos sirve porque es el header del html
