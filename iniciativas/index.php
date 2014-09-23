@@ -589,7 +589,7 @@ function tipo($string = "") {
 		$tipo = utf8_decode("Se le dispensaron todos los trámites");
 	} elseif(strpos($string, "Aprobada") !== false) {
 		$tipo = "Aprobada";
-	} elseif(strpos($string, "Prórroga") !== false) {
+	} elseif(strpos(utf8_encode($string), "Prórroga") !== false) {
 		$tipo = utf8_decode("Prórroga");
 	}elseif(strpos($string, "Precluida") !== false) {
 		$tipo = "Precluida";
