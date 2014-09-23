@@ -14,7 +14,32 @@ $id_legislatura = 1;
 #array de periodos
 $array_periodos = array();
 
-/*desde el primer periodo del segundo año*/
+/*Primer año*/
+$array_periodos[] = array(
+	"periodo" => 'Primer periodo ordinario',
+	"url"     => "/Gaceta/Iniciativas/62/gp62_a1primero.html",
+	"ano"     => "Primer año"
+);
+
+$array_periodos[] = array(
+	"periodo" => '1er. periodo Com. Permanente',
+	"url"     => "/Gaceta/Iniciativas/62/gp62_a1perma1.html",
+	"ano"     => "Primer año"
+);
+
+$array_periodos[] = array(
+	"periodo" => 'Segundo periodo ordinario',
+	"url"     => "/Gaceta/Iniciativas/62/gp62_a1segundo.html",
+	"ano"     => "Primer año"
+);
+
+$array_periodos[] = array(
+	"periodo" => 'Primer periodo ordinario',
+	"url"     => "/Gaceta/Iniciativas/62/gp62_a1perma2.html",
+	"ano"     => "2o. periodo Com. Permanente "
+);
+
+/*Segundo año*/
 $array_periodos[] = array(
 	"periodo" => 'Primer periodo ordinario',
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a2primero.html",
@@ -57,6 +82,7 @@ $array_periodos[] = array(
 	"ano"     => "Segundo año"
 );
 
+/*Tercer año*/
 $array_periodos[] = array(
 	"periodo" => 'Primer periodo ordinario',
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a3primero.html",
@@ -66,6 +92,7 @@ $array_periodos[] = array(
 #conexión a la base de datos
 $IniciativasBD = false;
 $IniciativasBD = conexionBD();
+$contador      = 0;
 
 foreach($array_periodos as $periodo) {
 	#Curl a las iniciativas legislatura 62
@@ -83,7 +110,6 @@ foreach($array_periodos as $periodo) {
 	#Hacemos el explode de este codigo que delimita las fechas de seeciones de las iniciativas con titulos rojos
 	$explode       = explode('<font color="#CC0000">', $resultado);
 	$iniciativas   = array();
-	$contador      = 0;
 
 	#si exsite un array y es mayor a 1 si no "algo anda mal" by pacojaso! y  eliminamos la primiera posicion no nos sirve porque es el header del html
 	if(is_array($explode) and count($explode) > 1) {
