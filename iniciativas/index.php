@@ -3,6 +3,7 @@
 <?php
 #php index.php -> logs/iniciativas-date-time.log &
 
+echo "Hora y fecha actual de inicio: " . date("Y-m-d H:i:s") . "\n";
 echo "Iniciando scrapping .... esperar \n\n";
 
 $ch      = curl_init();
@@ -496,7 +497,8 @@ foreach($array_periodos as $periodo) {
 		}
 		
 		#mensaje de termino de scrapping
-		echo "\n\n El scrapping ha terminado, total de iniciativas guardadas: " . $contador . " - Revisa la base de datos #MezcalSinControl :) \n\n";
+		echo "\n\n El scrapping ha terminado, total de iniciativas guardadas: " . $contador . " - Revisa la base de datos #MezcalSinControl :) \n";
+		echo "Hora y fecha actual del fin: " . date("Y-m-d H:i:s") . "\n";
 	} else {
 		echo "\n\n Algo extraño ocurrio :/ \n\n";
 		die("");
