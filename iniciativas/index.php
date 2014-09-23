@@ -63,6 +63,9 @@ $array_periodos[] = array(
 	"ano"     => "Tercer año"
 );
 
+#conexión a la base de datos
+$IniciativasBD = conexionBD();
+
 foreach($array_periodos as $periodo) {
 	#Curl a las iniciativas legislatura 62
 	curl_setopt($ch, CURLOPT_URL, $baseurl . $periodo["url"]);
@@ -88,8 +91,6 @@ foreach($array_periodos as $periodo) {
 		echo "Scrapping URL: \033[4m" . $periodo["url"] . "\033[0m\n\n";
 		
 		unset($explode[0]);
-		
-		$IniciativasBD = conexionBD();
 		
 		#imprimimos para el log
 		echo "Numero de grupos: " . count($explode) .  "\n\n";
