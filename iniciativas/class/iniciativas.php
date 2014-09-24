@@ -11,7 +11,7 @@ class Iniciativas {
 		/*conexion con base de datos*/
 		$this->pgsql = new Db();
 		$this->pgsql->connect($db);
-		$this->pgsql->query("SET NAMES 'utf8'");
+		//$this->pgsql->query("SET NAMES 'utf8'");
 	}
 	
 	/*guarda en base de datos la iniciativa*/
@@ -84,10 +84,10 @@ class Iniciativas {
 				foreach($voto2 as $key => $voto) {
 					#formo el query para las votaciones
 					$query  = "insert into votaciones_partidos_scrapper";
-					$fields = "(id_contador_voto, id_iniciativa, tipo, favor, contra, abstencion, quorum, ausente, total) ";
+					$fields = "(id_contador_voto, id_iniciativa, id_political_party, tipo, favor, contra, abstencion, quorum, ausente, total) ";
 					
 					$contador = $key2+1;
-					$values   = "(" . $contador . "," . $id_iniciativa . ",'" . $key . "'," . $voto["favor"] . "," .  $voto["contra"] . "," .  $voto["abstencion"] . ",";
+					$values   = "(" . $contador . "," . $id_iniciativa . "," . $this->getIDPartido($key) . ",'" . $key . "'," . $voto["favor"] . "," .  $voto["contra"] . "," .  $voto["abstencion"] . ",";
 					$values  .= $voto["quorum"] . "," .  $voto["ausente"] . "," .  $voto["total"] . ")";
 					
 					#inserto el registro en la base de datos
@@ -114,8 +114,8 @@ class Iniciativas {
 							#formo el query para las votaciones
 							$contador = $key2+1;
 							$query    = "insert into votaciones_representantes_scrapper";
-							$fields   = "(id_contador_voto, id_iniciativa, nombre, partido, tipo) ";
-							$values   = "(" . $contador . "," . $id_iniciativa . ",'" . $nombre . "','" . $key_partido . "','" .  $key_tipo . "')";
+							$fields   = "(id_contador_voto, id_iniciativa, id_political_party, nombre, partido, tipo) ";
+							$values   = "(" . $contador . "," . $id_iniciativa . "," . $this->getIDPartido($key_partido) . ",'" . $nombre . "','" . $key_partido . "','" .  $key_tipo . "')";
 							
 							#inserto el registro en la base de datos
 							$query  = utf8_encode($query . " " . $fields . " values " . $values);
@@ -128,6 +128,50 @@ class Iniciativas {
 		} else {
 			return false;
 		}
+	}
+	
+	/*Busca y regresa el ID del partido politco*/
+	public function getIDPartido($partido = "") {
+		switch($partido) {
+			case "pan":
+				$partido = "Partido Acción Nacional";
+				break;
+			case "pt":
+				$partido = "Partido del Trabajo";
+				break;
+			case "pna":
+				$partido = "Partido Nueva Alianza";
+				break;
+			case "pri":
+				$partido = "Partido Revolucionario Institucional";
+				break;
+			case "prd":
+				$partido = "Partido de la Revolución Democrática";
+				break;
+			case "pvem":
+				$partido = "Partido Verde Ecologista de México";
+				break;
+			case "mc":
+				$partido = "Movimiento Ciudadano";
+				break;
+			case "sp":
+				$partido = "Sin partido";
+				break;
+			case "total":
+				return 0;
+				break;
+		}
+		
+		$query = "select id_political_party from political_parties where name='" . $partido . "'";
+		$data  = $this->pgsql->query($query);
+		
+		if(is_array($data) and isset($data[0]["id_political_party"])) {
+			return $data[0]["id_political_party"];
+		} else {
+			return 0;
+		}
+		
+		
 	}
 	
 	/*comprueba si existe la iniciativa*/
@@ -167,4 +211,6 @@ class Iniciativas {
 			return false;
 		}
 	}
+	
+	/**/
 }

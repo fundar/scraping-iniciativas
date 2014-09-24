@@ -23,13 +23,14 @@ $array_periodos[] = array(
 	"ano"     => "Primer " . $ano
 );
 
+
+/*Segundo año*/
 $array_periodos[] = array(
 	"periodo" => 'Primer periodo ordinario',
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a1perma2.html",
 	"ano"     => "Segundo " . $ano
 );
 
-/*Segundo año*/
 $array_periodos[] = array(
 	"periodo" => 'Primer periodo ordinario',
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a2primero.html",
