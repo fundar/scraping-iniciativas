@@ -1,7 +1,12 @@
 #!/usr/bin/php -q
 
 <?php
-#php index.php -> logs/iniciativas-date-time.log &
+/*To-do
+ * Iniciativas:
+	* Limpiar url de enlace_dictamen_listado
+	* Limpiar los titulos de titulo_listado
+	* 
+*/
 
 echo "Hora y fecha actual de inicio: " . date("Y-m-d H:i:s") . "\n";
 echo "Iniciando scrapping .... esperar \n\n";
@@ -202,7 +207,8 @@ foreach($array_periodos as $periodo) {
 												$iniciativa_array["enlace_gaceta"] = $baseurl . "/" . $value["href"];
 											}
 										} elseif($value["titulo"] == "Dictaminada") {
-											$iniciativa_array["enlace_dictamen_listado"] = $baseurl . "/" . $value["href"];
+											$enlace = explode('"', $value["href"]);
+											$iniciativa_array["enlace_dictamen_listado"] = $baseurl . "/" . $enlace[0];
 										} elseif($value["titulo"] == "Publicado") {
 											$iniciativa_array["enlace_publicado_listado"] = $baseurl . "/" . $value["href"];
 										} elseif(utf8_encode($value["titulo"]) == "Votación") {
