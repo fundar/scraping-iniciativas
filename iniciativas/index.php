@@ -574,7 +574,7 @@ function esVotacion($string = "") {
 
 /*obtiene el tipo de paso/estatus de la iniciativa*/
 function tipo($string = "") {
-	if(strpos($string, "Enviada") !== false) {
+	if(strpos($string, "Enviada") !== false or strpos($string, "Enviado") !== false) {
 		$tipo = "Enviada";
 	} elseif(strpos($string, "Presentada") !== false) {
 		$tipo = "Presentada";
@@ -598,8 +598,10 @@ function tipo($string = "") {
 		$tipo = "Aprobada";
 	} elseif(strpos(utf8_encode($string), "Prórroga") !== false) {
 		$tipo = utf8_decode("Prórroga");
-	}elseif(strpos($string, "Precluida") !== false) {
+	} elseif(strpos($string, "Precluida") !== false) {
 		$tipo = "Precluida";
+	} elseif(strpos($string, "Desechada") !== false) {
+		$tipo = "Desechada";
 	} else {
 		$tipo = "Otro";
 	}
