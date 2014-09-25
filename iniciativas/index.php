@@ -4,7 +4,6 @@
 /*To-do
  * Iniciativas:
 	* Limpiar url de enlace_dictamen_listado
-	* Limpiar los titulos de titulo_listado
 	* 
 */
 
@@ -166,7 +165,7 @@ foreach($array_periodos as $periodo) {
 												$ancla = $ancla[1];
 												
 												#obtenemos el html
-												curl_setopt($ch, CURLOPT_URL, $baseurl . "/" . $value["href"]);
+												curl_setopt($ch, CURLOPT_URL, $baseurl . $value["href"]);
 												curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 												curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 												curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -202,19 +201,19 @@ foreach($array_periodos as $periodo) {
 												$contenido_html = preg_replace("/\r\n+|\r+|\n+|\t+/i", "", $contenido_html);
 												
 												#guardamos el contenido en el array de la iniciativa
-												$iniciativa_array["enlace_gaceta"]             = $baseurl . "/" . $value["href"];
+												$iniciativa_array["enlace_gaceta"]             = $baseurl . $value["href"];
 												$iniciativa_array["contenido_html_iniciativa"] = $contenido_html;
 											} else {
-												$iniciativa_array["enlace_gaceta"] = $baseurl . "/" . $value["href"];
+												$iniciativa_array["enlace_gaceta"] = $baseurl . $value["href"];
 											}
 										} elseif($value["titulo"] == "Dictaminada") {
 											$enlace = explode('"', $value["href"]);
-											$iniciativa_array["enlace_dictamen_listado"] = $baseurl . "/" . $enlace[0];
+											$iniciativa_array["enlace_dictamen_listado"] = $baseurl . $enlace[0];
 										} elseif($value["titulo"] == "Publicado") {
-											$iniciativa_array["enlace_publicado_listado"] = $baseurl . "/" . $value["href"];
+											$iniciativa_array["enlace_publicado_listado"] = $baseurl . $value["href"];
 										} elseif(utf8_encode($value["titulo"]) == "Votación") {
 											#obtenemos el html de la votación y lo limpiamos
-											curl_setopt($ch, CURLOPT_URL, $baseurl . "/" . $value["href"]);
+											curl_setopt($ch, CURLOPT_URL, $baseurl . $value["href"]);
 											curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 											curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 											curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
