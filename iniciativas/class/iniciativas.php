@@ -238,5 +238,7 @@ class Iniciativas {
 				return 0;
 				break;
 		}
+		
+		return false;
 	}
 }
