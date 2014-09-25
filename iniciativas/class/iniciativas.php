@@ -208,13 +208,13 @@ class Iniciativas {
 				return "partido-nueva-alianza";
 				break;
 			case "pri":
-				return "partido-revolucionario-institucionall";
+				return "partido-revolucionario-institucional";
 				break;
 			case "Partido Revolucionario Institucional":
 				return "partido-revolucionario-institucional";
 				break;
 			case "prd":
-				return "Partido de la Revolución Democrática";
+				return "partido-revolucionario-institucional";
 				break;
 			case "Partido de la Revolución Democrática":
 				return "partido-de-la-revolucion-democratica";

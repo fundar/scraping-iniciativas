@@ -109,6 +109,7 @@ foreach($array_periodos as $periodo) {
 							
 							#variable que contiene el titulo de la iniciativa en el listado
 							$titulo_listado = trim($titulo_array[0]);
+							$titulo_listado = strip_tags($titulo_listado);
 							
 							#guardamos el html, titulo, perido y legislatura para futuras comparaciones
 							$iniciativa_array["titulo_listado"] = $titulo_listado;
