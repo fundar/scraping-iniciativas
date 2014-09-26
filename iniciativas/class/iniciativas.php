@@ -132,46 +132,20 @@ class Iniciativas {
 	
 	/*Busca y regresa el ID del partido politco*/
 	public function getIDPartido($partido = "") {
-		switch($partido) {
-			case "pan":
-				$partido = "Partido Acción Nacional";
-				break;
-			case "pt":
-				$partido = "Partido del Trabajo";
-				break;
-			case "pna":
-				$partido = "Partido Nueva Alianza";
-				break;
-			case "pri":
-				$partido = "Partido Revolucionario Institucional";
-				break;
-			case "prd":
-				$partido = "Partido de la Revolución Democrática";
-				break;
-			case "pvem":
-				$partido = "Partido Verde Ecologista de México";
-				break;
-			case "mc":
-				$partido = "Movimiento Ciudadano";
-				break;
-			case "sp":
-				$partido = "Sin partido";
-				break;
-			case "total":
+		$slug = $this->getSlugPartido($partido);
+		
+		if($slug) {
+			$query = "select id_political_party from political_parties where slug='" . $slug . "'";
+			$data  = $this->pgsql->query($query);
+			
+			if(is_array($data) and isset($data[0]["id_political_party"])) {
+				return $data[0]["id_political_party"];
+			} else {
 				return 0;
-				break;
-		}
-		
-		$query = "select id_political_party from political_parties where name='" . $partido . "'";
-		$data  = $this->pgsql->query($query);
-		
-		if(is_array($data) and isset($data[0]["id_political_party"])) {
-			return $data[0]["id_political_party"];
+			}
 		} else {
 			return 0;
 		}
-		
-		
 	}
 	
 	/*comprueba si existe la iniciativa*/
@@ -212,5 +186,59 @@ class Iniciativas {
 		}
 	}
 	
-	/**/
+	/*Obtener el slug del partido*/
+	public function getSlugPartido($partido = "") {
+		switch($partido) {
+			case "pan":
+				return "partido-accion-nacional";
+				break;
+			case "Partido Acción Nacional":
+				return "partido-accion-nacional";
+				break;
+			case "pt":
+				return "partido-del-trabajo";
+				break;
+			case "Partido del Trabajo":
+				return "partido-del-trabajo";
+				break;
+			case "pna":
+				return "partido-nueva-alianza";
+				break;
+			case "Partido Nueva Alianza":
+				return "partido-nueva-alianza";
+				break;
+			case "pri":
+				return "partido-revolucionario-institucional";
+				break;
+			case "Partido Revolucionario Institucional":
+				return "partido-revolucionario-institucional";
+				break;
+			case "prd":
+				return "partido-revolucionario-institucional";
+				break;
+			case "Partido de la Revolución Democrática":
+				return "partido-de-la-revolucion-democratica";
+				break;
+			case "pvem":
+				return "partido-verde-ecologista-de-mexico";
+				break;
+			case "Partido Verde Ecologista de México":
+				return "partido-verde-ecologista-de-mexico";
+				break;
+			case "mc":
+				return "movimiento-ciudadano";
+				break;
+			case "Movimiento Ciudadano":
+				return "movimiento-ciudadano";
+				break;
+			case "sp":
+				return "sin-partido";
+				break;
+			case "total":
+				return 0;
+				break;
+		}
+		
+		return false;
+	}
 }

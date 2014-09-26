@@ -4,7 +4,6 @@
 /*To-do
  * Iniciativas:
 	* Limpiar url de enlace_dictamen_listado
-	* Limpiar los titulos de titulo_listado
 	* 
 */
 
@@ -109,6 +108,7 @@ foreach($array_periodos as $periodo) {
 							
 							#variable que contiene el titulo de la iniciativa en el listado
 							$titulo_listado = trim($titulo_array[0]);
+							$titulo_listado = strip_tags($titulo_listado);
 							
 							#guardamos el html, titulo, perido y legislatura para futuras comparaciones
 							$iniciativa_array["titulo_listado"] = $titulo_listado;
@@ -165,7 +165,7 @@ foreach($array_periodos as $periodo) {
 												$ancla = $ancla[1];
 												
 												#obtenemos el html
-												curl_setopt($ch, CURLOPT_URL, $baseurl . "/" . $value["href"]);
+												curl_setopt($ch, CURLOPT_URL, $baseurl . $value["href"]);
 												curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 												curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 												curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -201,19 +201,19 @@ foreach($array_periodos as $periodo) {
 												$contenido_html = preg_replace("/\r\n+|\r+|\n+|\t+/i", "", $contenido_html);
 												
 												#guardamos el contenido en el array de la iniciativa
-												$iniciativa_array["enlace_gaceta"]             = $baseurl . "/" . $value["href"];
+												$iniciativa_array["enlace_gaceta"]             = $baseurl . $value["href"];
 												$iniciativa_array["contenido_html_iniciativa"] = $contenido_html;
 											} else {
-												$iniciativa_array["enlace_gaceta"] = $baseurl . "/" . $value["href"];
+												$iniciativa_array["enlace_gaceta"] = $baseurl . $value["href"];
 											}
 										} elseif($value["titulo"] == "Dictaminada") {
 											$enlace = explode('"', $value["href"]);
-											$iniciativa_array["enlace_dictamen_listado"] = $baseurl . "/" . $enlace[0];
+											$iniciativa_array["enlace_dictamen_listado"] = $baseurl . $enlace[0];
 										} elseif($value["titulo"] == "Publicado") {
-											$iniciativa_array["enlace_publicado_listado"] = $baseurl . "/" . $value["href"];
+											$iniciativa_array["enlace_publicado_listado"] = $baseurl . $value["href"];
 										} elseif(utf8_encode($value["titulo"]) == "Votación") {
 											#obtenemos el html de la votación y lo limpiamos
-											curl_setopt($ch, CURLOPT_URL, $baseurl . "/" . $value["href"]);
+											curl_setopt($ch, CURLOPT_URL, $baseurl . $value["href"]);
 											curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 											curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 											curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -574,7 +574,7 @@ function esVotacion($string = "") {
 
 /*obtiene el tipo de paso/estatus de la iniciativa*/
 function tipo($string = "") {
-	if(strpos($string, "Enviada") !== false) {
+	if(strpos($string, "Enviada") !== false or strpos($string, "Enviado") !== false) {
 		$tipo = "Enviada";
 	} elseif(strpos($string, "Presentada") !== false) {
 		$tipo = "Presentada";
@@ -598,8 +598,10 @@ function tipo($string = "") {
 		$tipo = "Aprobada";
 	} elseif(strpos(utf8_encode($string), "Prórroga") !== false) {
 		$tipo = utf8_decode("Prórroga");
-	}elseif(strpos($string, "Precluida") !== false) {
+	} elseif(strpos($string, "Precluida") !== false) {
 		$tipo = "Precluida";
+	} elseif(strpos($string, "Desechada") !== false) {
+		$tipo = "Desechada";
 	} else {
 		$tipo = "Otro";
 	}
