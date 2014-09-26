@@ -97,12 +97,25 @@ foreach($array_periodos as $periodo) {
 								if(strpos($pre_envia, "Enviada") !== false) {
 									$iniciativa_array["enviada"] = $pre_envia;
 								} elseif(strpos($pre_envia, "Presentada") !== false) {
+									//¿Esto quiere decir que es todo el partido?
+									//suscrita por integrantes del Grupo Parlamentario del PAN
+									//suscrita por diputados integrantes del Grupo Parlamentario del PRI
+									
+									//remplazamos cosas que no queremos
+									$array_replace1 = array('Presentada por los diputados ', 'Presentada por el diputado ', 'Presentada por el diputado ', 'Presentada por la diputada ', 'Presentada por el ', 'Presentada por la senadora ', 'Presentada por el senador ');
+									$array_replace2 = array('.', ';', ', PRD', ', PRI', ', PAN', ', PT', ', PVEM', ', Movimiento Ciudadano', ', Nueva Alianza');
+									
+									$pre_envia = str_replace($array_replace1, '', $pre_envia);
+									$pre_envia = str_replace($array_replace2, '', $pre_envia);
+									
+									var_dump($pre_envia);
 									$iniciativa_array["presentada"] = $pre_envia;
 								}
 							}
 							
 							#turnada por
 							if(isset($titulos_array[2])) {
+								#¿con opinión de la?
 								$iniciativa_array["turnada"] = trim($titulos_array[2]);
 							}
 							
@@ -417,7 +430,7 @@ foreach($array_periodos as $periodo) {
 								}
 								
 								#guardamos iniciativa en la BD
-								$contador = guardaIiniciativa($iniciativa_array, $IniciativasBD, $contador);
+								#contador = guardaIiniciativa($iniciativa_array, $IniciativasBD, $contador);
 							}
 						}
 					}
