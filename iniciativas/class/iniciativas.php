@@ -188,6 +188,8 @@ class Iniciativas {
 	
 	/*Obtener el slug del partido*/
 	public function getSlugPartido($partido = "") {
+		$partido = utf8_encode($partido);
+		
 		switch($partido) {
 			case "pan":
 				return "partido-accion-nacional";
