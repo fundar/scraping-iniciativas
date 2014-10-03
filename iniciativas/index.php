@@ -98,24 +98,27 @@ foreach($array_periodos as $periodo) {
 									$iniciativa_array["enviada"] = $pre_envia;
 								} elseif(strpos($pre_envia, "Presentada") !== false) {
 									//¿Esto quiere decir que es todo el partido?
-									//suscrita por integrantes del Grupo Parlamentario del PAN
-									//suscrita por diputados integrantes del Grupo Parlamentario del PRI
+									$pre_envia_full = $pre_envia;
 									
 									//remplazamos cosas que no queremos
-									$array_replace1 = array('Presentada por los diputados ', 'Presentada por el diputado ', 'Presentada por el diputado ', 'Presentada por la diputada ', 'Presentada por el ', 'Presentada por la senadora ', 'Presentada por el senador ');
-									$array_replace2 = array('.', ';', ', PRD', ', PRI', ', PAN', ', PT', ', PVEM', ', Movimiento Ciudadano', ', Nueva Alianza');
+									$array_replace1 = array('Presentada por integrantes del ', 'Presentada por diputados del ', 'Presentada por los diputados ', 'Presentada por las diputadas ', 'Presentada por el diputado ', 'Presentada por el diputado ', 'Presentada por la diputada ', 'Presentada por el senador ', 'Presentada por el ', 'Presentada por la senadora ', 'Presentada por el senador ', 'Presentada por los senadores ');
+									$array_replace2 = array('.', ';', ', PRD', ', PRI', ', PAN', ', PT', ', PVEM', ', Movimiento Ciudadano', ', Nueva Alianza', 'suscrita por integrantes del ');
 									
 									$pre_envia = str_replace($array_replace1, '', $pre_envia);
 									$pre_envia = str_replace($array_replace2, '', $pre_envia);
+									$pre_envia = str_replace(' y ', ',', $pre_envia);
+									$pre_envia = explode(',', $pre_envia);
 									
 									var_dump($pre_envia);
-									$iniciativa_array["presentada"] = $pre_envia;
+									$iniciativa_array["presentada"]       = $pre_envia_full;
+									$iniciativa_array["presentada_array"] = $pre_envia;
 								}
 							}
 							
 							#turnada por
 							if(isset($titulos_array[2])) {
 								#¿con opinión de la?
+								#agregar comisiones, ligarlos
 								$iniciativa_array["turnada"] = trim($titulos_array[2]);
 							}
 							
@@ -430,7 +433,7 @@ foreach($array_periodos as $periodo) {
 								}
 								
 								#guardamos iniciativa en la BD
-								#contador = guardaIiniciativa($iniciativa_array, $IniciativasBD, $contador);
+								$contador = guardaIiniciativa($iniciativa_array, $IniciativasBD, $contador);
 							}
 						}
 					}
@@ -452,8 +455,8 @@ echo "Hora y fecha actual del fin: " . date("Y-m-d H:i:s") . "\n";
 
 #incluye los archivos y crea la conexión a la base de datos
 function conexionBD() {
-	include_once "class/iniciativas.php";
 	include_once "class/functions/string.php";
+	include_once "class/iniciativas.php";
 	
 	$Conexion = new Iniciativas();
 	return $Conexion;
@@ -474,15 +477,20 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 			#log de que ya existe pero tiene modifiaciones
 			echo "\n\n########################## \n";
 				echo "\n " . $contador . ".- Iniciativa ya existe pero tiene modificaciones: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
-				echo "El ID de esta iniciativa es: " . $id_iniciativa["id_iniciativa"] . "\n";
+				echo "El ID de esta iniciativa es: " . $id_iniciativa["id_initiative"] . "\n";
+				
+				#guardamos los que presentan
+				if(isset($iniciativa["presentada_array"])) {
+					$presentada  = $IniciativasBD->guardarPresentada($id_iniciativa, $iniciativa["presentada_array"]);
+				}
 				
 				#guardamos los pasos/estatus de la iniciativa
-				$estatus  = $IniciativasBD->guardarEstatus($id_iniciativa["id_iniciativa"], $iniciativa["estatus"]);
+				$estatus  = $IniciativasBD->guardarEstatus($id_iniciativa["id_initiative"], $iniciativa["estatus"]);
 				
 				#compruebo que existan votaciones para guardarlas en la base de datos, guarda tambipen los nombres de los representantes
 				if(isset($iniciativa["votaciones"])) {
-					$votacion  = $IniciativasBD->guardarVotacion($id_iniciativa["id_iniciativa"], $iniciativa["votaciones"]);
-					$votos_nom = $IniciativasBD->guardarVotacionNombres($id_iniciativa["id_iniciativa"], $iniciativa["votos_nombres"]);
+					$votacion  = $IniciativasBD->guardarVotacion($id_iniciativa["id_initiative"], $iniciativa["votaciones"]);
+					$votos_nom = $IniciativasBD->guardarVotacionNombres($id_iniciativa["id_initiative"], $iniciativa["votos_nombres"]);
 					
 					if($votacion === true) {
 						echo "**** Votación Guardada ****\n";
@@ -501,6 +509,11 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 			echo "\n\n##########################";
 				echo "\n " . $contador . ".- Iniciativa Guardada: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
 				echo "El ID de esta iniciativa es: " . $id_iniciativa . "\n";
+				
+				#guardamos los que presentan
+				if(isset($iniciativa["presentada_array"])) {
+					$presentada  = $IniciativasBD->guardarPresentada($id_iniciativa, $iniciativa["presentada_array"]);
+				}
 				
 				#guardamos los pasos/estatus de la iniciativa
 				$estatus  = $IniciativasBD->guardarEstatus($id_iniciativa, $iniciativa["estatus"]);
@@ -538,7 +551,7 @@ function isSame($iniciativa, $IniciativasBD) {
 	if(is_array($result) and $result != false) {
 		echo "\n\n########################## \n";
 			echo "Existente - es identica a: " . utf8_encode($iniciativa["titulo_listado"]) . "\n";
-			echo "El registro (ID) con el cual es identica es: " . $result[0]["id_iniciativa"] . "\n";
+			echo "El registro (ID) con el cual es identica es: " . $result[0]["id_initiative"] . "\n";
 		echo "########################## \n\n";
 		
 		return true;

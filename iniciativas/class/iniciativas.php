@@ -16,7 +16,14 @@ class Iniciativas {
 	
 	/*guarda en base de datos la iniciativa*/
 	public function guardar($iniciativa) {
+		#debug
+		return 1;
+		
 		$data = $this->isExists($iniciativa);
+		
+		if(isset($iniciativa["presentada_array"])) {
+			unset($iniciativa["presentada_array"]);
+		}
 		
 		#eliminamos arrays de votaciones para solo dejar lo de iniciativas
 		if(isset($iniciativa["votaciones"])) {
@@ -33,7 +40,7 @@ class Iniciativas {
 		if($data == false) {
 			#La guarda pero con un id_parten 0
 			$iniciativa["id_parent"] = 0;
-			$id_iniciativa 		     = $this->save("iniciativas_scrapper", $iniciativa, "id_iniciativa");
+			$id_iniciativa 		     = $this->save("iniciativas_scrapper", $iniciativa, "id_initiative");
 			
 			if(is_int($id_iniciativa)) {
 				return $id_iniciativa;
@@ -42,14 +49,86 @@ class Iniciativas {
 			}
 		} else {
 			#si ya existe la guarda pero con un id_parten de la que ya existe
-			$iniciativa["id_parent"] = $data[0]["id_iniciativa"];
-			$id_iniciativa 			 = $this->save("iniciativas_scrapper", $iniciativa, "id_iniciativa");
+			$iniciativa["id_parent"] = $data[0]["id_initiative"];
+			$id_iniciativa 			 = $this->save("iniciativas_scrapper", $iniciativa, "id_initiative");
 			
 			if(is_int($id_iniciativa)) {
-				return array("existe" => "existe", "id_iniciativa" => $id_iniciativa);
+				return array("existe" => "existe", "id_initiative" => $id_iniciativa);
 			} else {
 				return false;
 			}
+		}
+	}
+	
+	/*guardamos los que presentan la iniciativa en una talba*/
+	public function guardarPresentada($id_iniciativa = false, $array) {
+		if($id_iniciativa != false) {
+			foreach($array as $key => $value) {
+				#hacer validaciones e insertar en talbas de relacion, representantes, partidos politicos y dependencias
+				if(strpos($value, "Parlamentario") !== false) {
+					$slug = "";
+					
+					if(strpos($value, "PVEM") !== false) {
+						$slug = "partido-verde-ecologista-de-mexico";
+					}
+					
+					if(strpos($value, "PRD") !== false) {
+						$slug = "partido-de-la-revolucion-democratica";
+					}
+					
+					if(strpos($value, "PRI") !== false) {
+						$slug = "partido-revolucionario-institucional";
+					}
+					
+					if(strpos($value, "PAN") !== false) {
+						$slug = "partido-accion-nacional";
+					}
+					
+					if(strpos($value, "PT") !== false) {
+						$slug = "partido-del-trabajo";
+					}
+					
+					if(strpos($value, "Partido del Trabajo") !== false) {
+						$slug = "partido-del-trabajo";
+					}
+					
+					if(strpos($value, "Nueva Alianza") !== false) {
+						$slug = "partido-nueva-alianza";
+					}
+					
+					if(strpos($value, "Movimiento Ciudadano") !== false) {
+						$slug = "movimiento-ciudadano";
+					}
+					
+					$id_partido = $this->getIDPartido($slug, true);
+					
+					if($id_partido != 0) {
+						$relation["id_political_party"] = $id_partido;
+						$relation["id_initiative"]      = $id_iniciativa;
+						$relation 		                = $this->save("initiative2political_party", $relation, "id_initiative");
+					}
+				} elseif(strpos($value, "Congreso") !== false or strpos($value, "Ejecutivo federal") !== false) {
+					$value         = trim($value);
+					$id_dependency = $this->getIDDependency(slug($value), $value);
+					
+					if($id_depedency != 0) {
+						$relation["id_dependency"] = $id_dependency;
+						$relation["id_initiative"] = $id_iniciativa;
+						$relation 		           = $this->save("initiative2dependencies", $relation, "id_initiative");
+					}
+				} else {
+					$value             = trim($value);
+					$id_representative = $this->getIDRepresentante(slug($value), true);
+					
+					if($id_representative != 0) {
+						$relation["id_representative"] = $id_representative;
+						$relation["id_initiative"]     = $id_iniciativa;
+						$relation 		               = $this->save("initiative2representatives", $relation, "id_representative");
+					}
+				}
+			}
+		} else {
+			return false;
 		}
 	}
 	
@@ -61,7 +140,7 @@ class Iniciativas {
 			foreach($estatus as $key => $value) {
 				#formo el query para los estatys
 				$query  = "insert into estatus_iniciativas_scrapper";
-				$fields = "(id_iniciativa, titulo, titulo_limpio, tipo, votacion) ";
+				$fields = "(id_initiative, titulo, titulo_limpio, tipo, votacion) ";
 				$values = "(" . $id_iniciativa . ",'" . $value["titulo"] . "','" .  $value["titulo_limpio"] . "','" .  $value["tipo"] . "'," .  $value["votacion"] . ")";
 				
 				#inserto el registro en la base de datos
@@ -84,7 +163,7 @@ class Iniciativas {
 				foreach($voto2 as $key => $voto) {
 					#formo el query para las votaciones
 					$query  = "insert into votaciones_partidos_scrapper";
-					$fields = "(id_contador_voto, id_iniciativa, id_political_party, tipo, favor, contra, abstencion, quorum, ausente, total) ";
+					$fields = "(id_contador_voto, id_initiative, id_political_party, tipo, favor, contra, abstencion, quorum, ausente, total) ";
 					
 					$contador = $key2+1;
 					$values   = "(" . $contador . "," . $id_iniciativa . "," . $this->getIDPartido($key) . ",'" . $key . "'," . $voto["favor"] . "," .  $voto["contra"] . "," .  $voto["abstencion"] . ",";
@@ -114,7 +193,7 @@ class Iniciativas {
 							#formo el query para las votaciones
 							$contador = $key2+1;
 							$query    = "insert into votaciones_representantes_scrapper";
-							$fields   = "(id_contador_voto, id_iniciativa, id_political_party, nombre, partido, tipo) ";
+							$fields   = "(id_contador_voto, id_initiative, id_political_party, nombre, partido, tipo) ";
 							$values   = "(" . $contador . "," . $id_iniciativa . "," . $this->getIDPartido($key_partido) . ",'" . $nombre . "','" . $key_partido . "','" .  $key_tipo . "')";
 							
 							#inserto el registro en la base de datos
@@ -131,8 +210,34 @@ class Iniciativas {
 	}
 	
 	/*Busca y regresa el ID del partido politco*/
-	public function getIDPartido($partido = "") {
-		$slug = $this->getSlugPartido($partido);
+	public function getIDRepresentante($value = "", $slug = false) {
+		if($slug) {
+			$slug = $value;
+		} else {
+			$slug = slug($value);
+		}
+		
+		if($slug) {
+			$query = "select id_representative from representatives_scrapper where slug='" . $slug . "'";
+			$data  = $this->pgsql->query($query);
+			
+			if(is_array($data) and isset($data[0]["id_representative"])) {
+				return $data[0]["id_representative"];
+			} else {
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+	}
+	
+	/*Busca y regresa el ID del partido politco*/
+	public function getIDPartido($partido = "", $slug = false) {
+		if($slug) {
+			$slug = $partido;
+		} else {
+			$slug = $this->getSlugPartido($partido);
+		}
 		
 		if($slug) {
 			$query = "select id_political_party from political_parties where slug='" . $slug . "'";
@@ -142,6 +247,29 @@ class Iniciativas {
 				return $data[0]["id_political_party"];
 			} else {
 				return 0;
+			}
+		} else {
+			return 0;
+		}
+	}
+	
+	/*Busca y regresa el ID de la dependencia*/
+	public function getIDDependency($slug = "", $dependency = "") {
+		if($slug) {
+			$query = "select id_dependency from dependencies where slug='" . $slug . "'";
+			$data  = $this->pgsql->query($query);
+			
+			if(is_array($data) and isset($data[0]["id_dependency"])) {
+				return $data[0]["id_dependency"];
+			} else {
+				$query  = utf8_encode("INSERT INTO dependencies (name, slug) VALUES ('" . $value . "', '" . $slug . "') RETURNING id_dependency");
+				$result = $this->pgsql->query($query);
+				
+				if(is_array($result) and isset($result[0]["id_dependency"])) {
+					return intval($result[0]["id_dependency"]);
+				} else {
+					return 0;
+				}
 			}
 		} else {
 			return 0;
@@ -216,7 +344,7 @@ class Iniciativas {
 				return "partido-revolucionario-institucional";
 				break;
 			case "prd":
-				return "partido-revolucionario-institucional";
+				return "partido-de-la-revolucion-democratica";
 				break;
 			case "Partido de la Revolución Democrática":
 				return "partido-de-la-revolucion-democratica";
