@@ -58,11 +58,13 @@ foreach($array_periodos as $periodo) {
 			
 			#declaramos arrays que ocuparemos adelante
 			$iniciativa_array = array();
-			$iniciativa_array["fecha_listado"]  = "";
+			$iniciativa_array["numero_iniciativa"]     = "";
+			$iniciativa_array["fecha_listado"]         = "";
+			$iniciativa_array["fecha_listado_header"]  = "";
 			
 			#si las fecha existe la guardamos en array
 			if(is_array($fecha_array) and count($fecha_array) > 0) {
-				$iniciativa_array["fecha_listado"] = $fecha_array[0];
+				$iniciativa_array["fecha_listado_header"] = $fecha_array[0];
 			}
 			
 			#despues viena la lista de inicativas por bloque en ul>li
@@ -94,9 +96,11 @@ foreach($array_periodos as $periodo) {
 							if(isset($titulos_array[1])) {
 								$pre_envia = trim($titulos_array[1]);
 								
-								if(strpos($pre_envia, "Enviada") !== false) {
+								if(strpos($pre_envia, "Enviada") !== false or strpos($pre_envia, "Enviado") !== false) {
 									$iniciativa_array["enviada"] = $pre_envia;
-								} elseif(strpos($pre_envia, "Presentada") !== false) {
+								} 
+								
+								if(strpos($pre_envia, "Presentada") !== false) {
 									//¿Esto quiere decir que es todo el partido?
 									$pre_envia_full = $pre_envia;
 									
@@ -109,7 +113,6 @@ foreach($array_periodos as $periodo) {
 									$pre_envia = str_replace(' y ', ',', $pre_envia);
 									$pre_envia = explode(',', $pre_envia);
 									
-									var_dump($pre_envia);
 									$iniciativa_array["presentada"]       = $pre_envia_full;
 									$iniciativa_array["presentada_array"] = $pre_envia;
 								}
@@ -151,6 +154,19 @@ foreach($array_periodos as $periodo) {
 									
 									#recorremos los enlaces
 									foreach($enlaces_array as $value) {
+										#fecha y numero de iniciativa
+										if(strpos($value, "Gaceta Parlamentaria") !== false) {
+											$data_gaceta = explode('. (', $value);
+											
+											$number = explode(")", $data_gaceta[1]);
+											$number = trim($number[0]);
+											$fecha  = explode(",", $data_gaceta[0]);
+											$fecha  = trim($fecha[count($fecha)-1]);
+											
+											$iniciativa_array["numero_iniciativa"] = $number;
+											$iniciativa_array["fecha_listado"]     = $fecha;
+										}
+										
 										$enlace_array = explode('</a>', $value);
 										$enlace_array = $enlace_array[0];
 										

@@ -64,7 +64,6 @@ class Iniciativas {
 	public function guardarPresentada($id_iniciativa = false, $array) {
 		if($id_iniciativa != false) {
 			foreach($array as $key => $value) {
-				#hacer validaciones e insertar en talbas de relacion, representantes, partidos politicos y dependencias
 				if(strpos($value, "Parlamentario") !== false) {
 					$slug = "";
 					
@@ -111,14 +110,14 @@ class Iniciativas {
 					$value         = trim($value);
 					$id_dependency = $this->getIDDependency(slug($value), $value);
 					
-					if($id_depedency != 0) {
+					if($id_dependency != 0) {
 						$relation["id_dependency"] = $id_dependency;
 						$relation["id_initiative"] = $id_iniciativa;
 						$relation 		           = $this->save("initiative2dependencies", $relation, "id_initiative");
 					}
 				} else {
 					$value             = trim($value);
-					$id_representative = $this->getIDRepresentante(slug($value), true);
+					$id_representative = $this->getIDRepresentante($value);
 					
 					if($id_representative != 0) {
 						$relation["id_representative"] = $id_representative;
@@ -130,6 +129,12 @@ class Iniciativas {
 		} else {
 			return false;
 		}
+	}
+	
+	/*guardar turnada - comisiones*/
+	public function guardarTurnada($id_iniciativa = false, $array) {
+		
+		return false;
 	}
 	
 	/*guardamos los pasos/estatus de la iniciativa*/
@@ -209,16 +214,17 @@ class Iniciativas {
 		}
 	}
 	
-	/*Busca y regresa el ID del partido politco*/
+	/*Busca y regresa el ID del representante*/
 	public function getIDRepresentante($value = "", $slug = false) {
 		if($slug) {
 			$slug = $value;
 		} else {
-			$slug = slug($value);
+			$slug = slug(utf8_encode($value));
 		}
 		
 		if($slug) {
 			$query = "select id_representative from representatives_scrapper where slug='" . $slug . "'";
+			die(var_dump($query));
 			$data  = $this->pgsql->query($query);
 			
 			if(is_array($data) and isset($data[0]["id_representative"])) {
@@ -254,7 +260,7 @@ class Iniciativas {
 	}
 	
 	/*Busca y regresa el ID de la dependencia*/
-	public function getIDDependency($slug = "", $dependency = "") {
+	public function getIDDependency($slug = "", $value = "") {
 		if($slug) {
 			$query = "select id_dependency from dependencies where slug='" . $slug . "'";
 			$data  = $this->pgsql->query($query);
