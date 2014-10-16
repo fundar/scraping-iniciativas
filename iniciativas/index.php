@@ -117,10 +117,9 @@ foreach($array_periodos as $periodo) {
 								}
 							}
 							
-							#turnada por #debug
+							#turnada
 							if(isset($titulos_array[2])) {
-								#¿con opinión de la?
-								#agregar comisiones, ligarlos
+								#agregar comisiones, ligarlos a la tabla de relación
 								$pre_turnada  = trim($titulos_array[2]);
 								$pre_turnada2 = $pre_turnada;
 								
@@ -466,7 +465,7 @@ foreach($array_periodos as $periodo) {
 								}
 								
 								#guardamos iniciativa en la BD
-								#$contador = guardaIiniciativa($iniciativa_array, $IniciativasBD, $contador);
+								$contador = guardaIiniciativa($iniciativa_array, $IniciativasBD, $contador);
 							}
 						}
 					}
@@ -517,6 +516,11 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 					$presentada  = $IniciativasBD->guardarPresentada($id_iniciativa, $iniciativa["presentada_array"]);
 				}
 				
+				#guardamos las comisiones a las que han sido turnadas
+				if(isset($iniciativa["turnada_array"])) {
+					$presentada  = $IniciativasBD->guardarTurnada($id_iniciativa, $iniciativa["turnada_array"]);
+				}
+				
 				#guardamos los pasos/estatus de la iniciativa
 				$estatus  = $IniciativasBD->guardarEstatus($id_iniciativa["id_initiative"], $iniciativa["estatus"]);
 				
@@ -546,6 +550,11 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 				#guardamos los que presentan
 				if(isset($iniciativa["presentada_array"])) {
 					$presentada  = $IniciativasBD->guardarPresentada($id_iniciativa, $iniciativa["presentada_array"]);
+				}
+				
+				#guardamos las comisiones a las que han sido turnadas
+				if(isset($iniciativa["turnada_array"])) {
+					$presentada  = $IniciativasBD->guardarTurnada($id_iniciativa, $iniciativa["turnada_array"]);
 				}
 				
 				#guardamos los pasos/estatus de la iniciativa

@@ -104,7 +104,7 @@ class Iniciativas {
 					if($id_partido != 0) {
 						$relation["id_political_party"] = $id_partido;
 						$relation["id_initiative"]      = $id_iniciativa;
-						$relation 		                = $this->save("initiative2political_party", $relation, "id_initiative");
+						$relation_save 		            = $this->save("initiative2political_party", $relation, "id_initiative");
 					}
 				} elseif(strpos($value, "Congreso") !== false or strpos($value, "Ejecutivo federal") !== false) {
 					$value         = trim($value);
@@ -113,16 +113,16 @@ class Iniciativas {
 					if($id_dependency != 0) {
 						$relation["id_dependency"] = $id_dependency;
 						$relation["id_initiative"] = $id_iniciativa;
-						$relation 		           = $this->save("initiative2dependencies", $relation, "id_initiative");
+						$relation_save 		       = $this->save("initiative2dependencies", $relation, "id_initiative");
 					}
 				} else {
 					$value             = trim($value);
-					$id_representative = $this->getIDRepresentante($value);
+					$id_representative = $this->getIDRepresentante($value, false, "slug2");
 					
 					if($id_representative != 0) {
-						$relation["id_representative"] = $id_representative;
+						$relation["id_representative"] = intval($id_representative);
 						$relation["id_initiative"]     = $id_iniciativa;
-						$relation 		               = $this->save("initiative2representatives", $relation, "id_representative");
+						$relation_save 		           = $this->save("initiative2representatives", $relation, "id_representative");
 					}
 				}
 			}
@@ -133,6 +133,18 @@ class Iniciativas {
 	
 	/*guardar turnada - comisiones*/
 	public function guardarTurnada($id_iniciativa = false, $array) {
+		if($id_iniciativa != false) {
+			foreach($array as $key => $value) {
+				$value         = trim($value);
+				$id_commission = $this->getIDComision($value);
+				
+				if($id_comision != 0) {
+					$relation["id_commission"] = intval($id_commission);
+					$relation["id_initiative"] = $id_iniciativa;
+					$relation_save 		       = $this->save("commissions2initiatives", $relation, "id_commission");
+				}
+			}
+		}
 		
 		return false;
 	}
@@ -215,7 +227,7 @@ class Iniciativas {
 	}
 	
 	/*Busca y regresa el ID del representante*/
-	public function getIDRepresentante($value = "", $slug = false) {
+	public function getIDRepresentante($value = "", $slug = false, $field = "slug") {
 		if($slug) {
 			$slug = $value;
 		} else {
@@ -223,9 +235,10 @@ class Iniciativas {
 		}
 		
 		if($slug) {
-			$query = "select id_representative from representatives_scrapper where slug='" . $slug . "'";
-			die(var_dump($query));
+			$query = "select id_representative from representatives_scrapper where " . $field ."='" . $slug . "'";
 			$data  = $this->pgsql->query($query);
+			var_dump($query);
+			var_dump($data);
 			
 			if(is_array($data) and isset($data[0]["id_representative"])) {
 				return $data[0]["id_representative"];
