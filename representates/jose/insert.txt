@@ -1,0 +1,5 @@
+ALTER TABLE representatives_scrapper ADD slug varchar(255);
+ALTER TABLE representatives_scrapper ADD slug2 varchar(255);
+ALTER TABLE representatives_scrapper ADD full_name2 varchar(255);
+
+INSERT INTO representatives_scrapper( id_representative_type, avatar_id,name,last_name,full_name,slug,full_name2,slug2, id_political_party, email, phone,birthday, birth_state, birth_city,election_type, zone_state, district,circumscription,fecha_protesta, ubication, substitute, ultimo_grado_estudios, career, exp_legislative, commisions, suplentede, id_legislature) VALUES add files csv
