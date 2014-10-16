@@ -136,7 +136,7 @@ class Iniciativas {
 		if($id_iniciativa != false) {
 			foreach($array as $key => $value) {
 				$value         = trim($value);
-				$id_commission = $this->getIDComision($value);
+				$id_commission = $this->getIDCommission($value);
 				
 				if($id_comision != 0) {
 					$relation["id_commission"] = intval($id_commission);
@@ -237,8 +237,6 @@ class Iniciativas {
 		if($slug) {
 			$query = "select id_representative from representatives_scrapper where " . $field ."='" . $slug . "'";
 			$data  = $this->pgsql->query($query);
-			var_dump($query);
-			var_dump($data);
 			
 			if(is_array($data) and isset($data[0]["id_representative"])) {
 				return $data[0]["id_representative"];
@@ -289,6 +287,28 @@ class Iniciativas {
 				} else {
 					return 0;
 				}
+			}
+		} else {
+			return 0;
+		}
+	}
+	
+	/*Busca y regresa el ID de la comision*/
+	public function getIDCommission($value = "", $slug = false) {
+		if($slug) {
+			$slug = $value;
+		} else {
+			$slug = slug(utf8_encode($value));
+		}
+		
+		if($slug) {
+			$query = "select id_commission from commissions where slug='" . $slug . "'";
+			$data  = $this->pgsql->query($query);
+			
+			if(is_array($data) and isset($data[0]["id_commission"])) {
+				return $data[0]["id_commission"];
+			} else {
+				return 0;
 			}
 		} else {
 			return 0;
