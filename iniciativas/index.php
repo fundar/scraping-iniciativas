@@ -101,7 +101,6 @@ foreach($array_periodos as $periodo) {
 								} 
 								
 								if(strpos($pre_envia, "Presentada") !== false) {
-									//¿Esto quiere decir que es todo el partido?
 									$pre_envia_full = $pre_envia;
 									
 									//remplazamos cosas que no queremos
@@ -118,11 +117,29 @@ foreach($array_periodos as $periodo) {
 								}
 							}
 							
-							#turnada por
+							#turnada por #debug
 							if(isset($titulos_array[2])) {
 								#¿con opinión de la?
 								#agregar comisiones, ligarlos
-								$iniciativa_array["turnada"] = trim($titulos_array[2]);
+								$pre_turnada  = trim($titulos_array[2]);
+								$pre_turnada2 = $pre_turnada;
+								
+								$array_replace  = array('Turnada a la ', 'Turnada a las ', utf8_decode('Comisión de '), 'Comisiones de ', utf8_decode('Comisión '), 'Comisiones ', '.');
+								$array_replace2 = array('Unidas de ');
+								$pre_turnada2   = str_replace($array_replace, '', $pre_turnada2);
+								$pre_turnada2   = str_replace($array_replace2, '', $pre_turnada2);
+								
+								if(strpos($pre_turnada2, "y de ") !== false) {
+									$pre_turnada2 = explode(' y de ', $pre_turnada2);
+								} elseif(strpos($pre_turnada2, utf8_decode(', con opinión de la ')) !== false) {
+									$pre_turnada2 = explode(utf8_decode(', con opinión de la '), $pre_turnada2);
+								} else {
+									$pre_turnada2 = array($pre_turnada2);
+								}
+								
+								$iniciativa_array["turnada"] 	   = $pre_turnada;
+								$iniciativa_array["turnada_array"] = $pre_turnada2;
+								
 							}
 							
 							#variable que contiene el titulo de la iniciativa en el listado
@@ -449,7 +466,7 @@ foreach($array_periodos as $periodo) {
 								}
 								
 								#guardamos iniciativa en la BD
-								$contador = guardaIiniciativa($iniciativa_array, $IniciativasBD, $contador);
+								#$contador = guardaIiniciativa($iniciativa_array, $IniciativasBD, $contador);
 							}
 						}
 					}
