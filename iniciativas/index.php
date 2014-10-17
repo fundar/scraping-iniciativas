@@ -1,11 +1,7 @@
 #!/usr/bin/php -q
 
 <?php
-/*To-do
- * Iniciativas:
-	* Limpiar url de enlace_dictamen_listado
-	* 
-*/
+/*To-do*/
 
 echo "Hora y fecha actual de inicio: " . date("Y-m-d H:i:s") . "\n";
 echo "Iniciando scrapping .... esperar \n\n";

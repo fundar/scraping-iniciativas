@@ -16,9 +16,6 @@ class Iniciativas {
 	
 	/*guarda en base de datos la iniciativa*/
 	public function guardar($iniciativa) {
-		#debug
-		return 1;
-		
 		$data = $this->isExists($iniciativa);
 		
 		if(isset($iniciativa["presentada_array"])) {
@@ -64,6 +61,8 @@ class Iniciativas {
 	public function guardarPresentada($id_iniciativa = false, $array) {
 		if($id_iniciativa != false) {
 			foreach($array as $key => $value) {
+				$relation = false;
+				
 				if(strpos($value, "Parlamentario") !== false) {
 					$slug = "";
 					
@@ -125,6 +124,8 @@ class Iniciativas {
 						$relation_save 		           = $this->save("initiative2representatives", $relation, "id_representative");
 					}
 				}
+				
+				$relation = false;
 			}
 		} else {
 			return false;
@@ -138,7 +139,7 @@ class Iniciativas {
 				$value         = trim($value);
 				$id_commission = $this->getIDCommission($value);
 				
-				if($id_comision != 0) {
+				if($id_commission != 0) {
 					$relation["id_commission"] = intval($id_commission);
 					$relation["id_initiative"] = $id_iniciativa;
 					$relation_save 		       = $this->save("commissions2initiatives", $relation, "id_commission");
