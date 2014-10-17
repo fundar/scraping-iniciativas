@@ -210,8 +210,8 @@ class Iniciativas {
 							#formo el query para las votaciones
 							$contador = $key2+1;
 							$query    = "insert into votaciones_representantes_scrapper";
-							$fields   = "(id_contador_voto, id_initiative, id_political_party, nombre, partido, tipo) ";
-							$values   = "(" . $contador . "," . $id_iniciativa . "," . $this->getIDPartido($key_partido) . ",'" . $nombre . "','" . $key_partido . "','" .  $key_tipo . "')";
+							$fields   = "(id_contador_voto, id_initiative, id_political_party, id_representative, nombre, partido, tipo) ";
+							$values   = "(" . $contador . "," . $id_iniciativa . "," . $this->getIDPartido($key_partido) . "," . $this->getIDRepresentante($nombre) . ",'" . $nombre . "','" . $key_partido . "','" .  $key_tipo . "')";
 							
 							#inserto el registro en la base de datos
 							$query  = utf8_encode($query . " " . $fields . " values " . $values);
@@ -220,6 +220,7 @@ class Iniciativas {
 					}
 				}
 			}
+			
 			return true;
 		} else {
 			return false;
