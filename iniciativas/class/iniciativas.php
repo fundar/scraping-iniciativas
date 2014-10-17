@@ -18,8 +18,14 @@ class Iniciativas {
 	public function guardar($iniciativa) {
 		$data = $this->isExists($iniciativa);
 		
+		/*eliminamos arrays que no se ocupan*/
 		if(isset($iniciativa["presentada_array"])) {
 			unset($iniciativa["presentada_array"]);
+		}
+		
+		/*eliminamos arrays que no se ocupan*/
+		if(isset($iniciativa["turnada_array"])) {
+			unset($iniciativa["turnada_array"]);
 		}
 		
 		#eliminamos arrays de votaciones para solo dejar lo de iniciativas
