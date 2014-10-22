@@ -56,6 +56,7 @@ foreach($array_periodos as $periodo) {
 			$iniciativa_array = array();
 			$iniciativa_array["numero_iniciativa"]     = "";
 			$iniciativa_array["fecha_listado"]         = "";
+			$iniciativa_array["fecha_votacion"]        = "";
 			$iniciativa_array["fecha_listado_header"]  = "";
 			
 			#si las fecha existe la guardamos en array
@@ -270,6 +271,11 @@ foreach($array_periodos as $periodo) {
 											$nomtit = explode('nomtit" VALUE="', $html_votacion);
 											$nomtit = explode('">', $nomtit[1]);
 											$nomtit = $nomtit[0];
+											
+											/*fecha votación*/
+											$fecha_votacion = explode("<p>", $nomtit);
+											$fecha_votacion = trim($fecha_votacion[1]);
+											$iniciativa_array["fecha_votacion"] = $fecha_votacion;
 											
 											$evento = explode('evento" VALUE="', $html_votacion);
 											$evento = explode('">', $evento[1]);
