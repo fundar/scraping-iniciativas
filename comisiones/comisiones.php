@@ -5,7 +5,7 @@
 $ch = curl_init();
 $resultados = curl_exec($ch);
 
-for($i=1; $i <= 200; $i++) {
+for($i=1; $i <= 1; $i++) {
 		$explodes = [$i];
 		$ids[]    = $explodes[0];
 		
@@ -19,20 +19,6 @@ foreach($ids as $id) {
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
 	$resultado = curl_exec($ch);
-
-	
-
-	
-	//presidente
-
-	$explode = explode("NCIA</TD></TR>", $resultado);
-	if(isset($explode[1])) {
-		$explode = explode('class="linkVerde">', $explode[1]);
-		$explode = explode('<td width="100" class="textoNegro">', $explode[1]);
-		$presidente = $explode[0];
-	} else {
-		$presidente = "null";
-	}
 	
 	//comision
 	$explode = explode('<td class="EncabezadoVerde"', $resultado);
@@ -43,35 +29,10 @@ foreach($ids as $id) {
 	} else {
 		$nombre_comision = "null";
 	}
-	//vicepresidente
-	$explode = explode(">VICEPRESIDENCIA</TD></TR>", $resultado);
-	if(isset($explode[1])) {
-		$explode = explode('class="linkVerde">', $explode[1]);
-		$explode = explode('<td width="100" class="textoNegro">', $explode[1]);
-		$vice_presidente = $explode[0];
-	}
-else {
-		$explode = explode(">SECRETA", $resultado);
-		if(isset($explode[1])) {
-		$explode = explode('class="linkVerde">', $explode[1]);
-		$explode = explode('<td width="100" class="textoNegro">', $explode[1]);
-		$vice_presidente = $explode[0];
-			}
-           else {
-                      
-           			$vice_presidente = "null";
-            }
-            
-
-		}
-
-	
-	echo   $id. "|".$presidente. "|". $nombre_comision. "|". slug(utf8_encode($nombre_comision)). "|".$vice_presidente."<br/>";
-
-
 	
 	
-	
+	echo   $id. "|". $nombre_comision. "|". slug(utf8_encode($nombre_comision))."<br/>";
+
 	
 	
 }
