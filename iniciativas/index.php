@@ -509,12 +509,12 @@ function guardaIiniciativa($iniciativa, $IniciativasBD, $contador) {
 				
 				#guardamos los que presentan
 				if(isset($iniciativa["presentada_array"])) {
-					$presentada  = $IniciativasBD->guardarPresentada($id_iniciativa, $iniciativa["presentada_array"]);
+					$presentada  = $IniciativasBD->guardarPresentada($id_iniciativa["id_initiative"], $iniciativa["presentada_array"]);
 				}
 				
 				#guardamos las comisiones a las que han sido turnadas
 				if(isset($iniciativa["turnada_array"])) {
-					$presentada  = $IniciativasBD->guardarTurnada($id_iniciativa, $iniciativa["turnada_array"]);
+					$presentada  = $IniciativasBD->guardarTurnada($id_iniciativa["id_initiative"], $iniciativa["turnada_array"]);
 				}
 				
 				#guardamos los pasos/estatus de la iniciativa
