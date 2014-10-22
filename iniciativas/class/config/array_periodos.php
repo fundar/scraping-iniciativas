@@ -11,7 +11,7 @@ $array_periodos[] = array(
 	"ano"     => "Primer " . $ano
 );
 
-/*
+
 $array_periodos[] = array(
 	"periodo" => '1er. periodo Com. Permanente',
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a1perma1.html",
@@ -23,10 +23,9 @@ $array_periodos[] = array(
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a1segundo.html",
 	"ano"     => "Primer " . $ano
 );
-*/
+
 
 /*Segundo año*/
-/*
 $array_periodos[] = array(
 	"periodo" => 'Primer periodo ordinario',
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a1perma2.html",
@@ -74,13 +73,10 @@ $array_periodos[] = array(
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a2extra4.html",
 	"ano"     => "Segundo " . $ano
 );
-*/
 
 /*Tercer año*/
-/*
 $array_periodos[] = array(
 	"periodo" => 'Primer periodo ordinario',
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a3primero.html",
 	"ano"     => "Tercer " . $ano
 );
-*/
