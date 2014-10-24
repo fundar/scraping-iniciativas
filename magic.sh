@@ -1,5 +1,5 @@
 NOWF=$(date +"%F")
 NOWT=$(date +"%T")
  
-php iniciativas/index.php > iniciativas/logs/iniciativas-$NOWF-$NOWT.log &
-#tail -f iniciativas/logs/iniciativas-$NOWF-$NOWT.log
+php /var/www/scraping/iniciativas/index.php > /var/www/scraping/iniciativas/logs/iniciativas-$NOWF-$NOWT.log &
+#tail -f /var/www/scraping/iniciativas/logs/iniciativas-$NOWF-$NOWT.log
