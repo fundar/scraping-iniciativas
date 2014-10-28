@@ -54,14 +54,28 @@ foreach($array_periodos as $periodo) {
 			
 			#declaramos arrays que ocuparemos adelante
 			$iniciativa_array = array();
-			$iniciativa_array["numero_iniciativa"]     = "";
-			$iniciativa_array["fecha_listado"]         = "";
-			$iniciativa_array["fecha_votacion"]        = "";
-			$iniciativa_array["fecha_listado_header"]  = "";
+			$iniciativa_array["numero_iniciativa"]       = "";
+			$iniciativa_array["fecha_listado"]           = "";
+			$iniciativa_array["fecha_listado_tm"]        = "";
+			$iniciativa_array["fecha_votacion"]          = "";
+			$iniciativa_array["fecha_votacion_tm"]       = "";
+			$iniciativa_array["fecha_listado_header"]    = "";
+			$iniciativa_array["fecha_listado_header_tm"] = "";
 			
 			#si las fecha existe la guardamos en array
 			if(is_array($fecha_array) and count($fecha_array) > 0) {
 				$iniciativa_array["fecha_listado_header"] = $fecha_array[0];
+				
+				if($fecha_array[0] == "") {
+					unset($iniciativa_array["fecha_listado_header_tm"]);
+				} else {
+					$fecha_listado_header    = str_replace(" de ", " ", $fecha_array[0]);
+					$fecha_listado_header    = trim($fecha_listado_header);
+					$fecha_listado_header    = explode(" ", $fecha_listado_header);
+					$fecha_listado_header    = strtotime($fecha_listado_header[1] . '-' . getMes(ucfirst($fecha_listado_header[2])) . '-' . $fecha_listado_header[3]);
+					$iniciativa_array["fecha_listado_header_tm"] = date("Y-m-d H:i:s", $fecha_listado_header);
+					if($iniciativa_array["fecha_listado_header_tm"] == "") unset($iniciativa_array["fecha_listado_header_tm"]);
+				}
 			}
 			
 			#despues viena la lista de inicativas por bloque en ul>li
@@ -175,9 +189,19 @@ foreach($array_periodos as $periodo) {
 											$number = trim($number[0]);
 											$fecha  = explode(",", $data_gaceta[0]);
 											$fecha  = trim($fecha[count($fecha)-1]);
+											$fecha  = str_replace(".", "", $fecha);
+											$fecha  = str_replace("+", "", $fecha);
+											$fecha  = str_replace("</li>", "", $fecha);
+											$fecha  = trim($fecha);
+											
+											$fecha_listado    = str_replace(" de ", " ", $fecha);
+											$fecha_listado    = explode(" ", $fecha_listado);
+											$fecha_listado    = strtotime($fecha_listado[1] . '-' . getMes(ucfirst($fecha_listado[2])) . '-' . $fecha_listado[3]);
 											
 											$iniciativa_array["numero_iniciativa"] = $number;
 											$iniciativa_array["fecha_listado"]     = $fecha;
+											$iniciativa_array["fecha_listado_tm"] = date("Y-m-d H:i:s", $fecha_listado);
+											if($iniciativa_array["fecha_listado_tm"] == "") unset($iniciativa_array["fecha_listado_tm"]);
 										}
 										
 										$enlace_array = explode('</a>', $value);
@@ -276,6 +300,16 @@ foreach($array_periodos as $periodo) {
 											$fecha_votacion = explode("<p>", $nomtit);
 											$fecha_votacion = trim($fecha_votacion[1]);
 											$iniciativa_array["fecha_votacion"] = $fecha_votacion;
+											
+											if($fecha_votacion == "") {
+												unset($iniciativa_array["fecha_votacion_tm"]);
+											} else {
+												$fecha_votacion    = str_replace(" de ", " ", $fecha_votacion);
+												$fecha_votacion    = explode(" ", $fecha_votacion);
+												$fecha_votacion    = strtotime($fecha_votacion[0] . '-' . getMes(ucfirst($fecha_votacion[1])) . '-' . $fecha_votacion[2]);
+												$iniciativa_array["fecha_votacion_tm"] = date("Y-m-d H:i:s", $fecha_votacion);
+												if($iniciativa_array["fecha_votacion_tm"] == "") unset($iniciativa_array["fecha_votacion_tm"]);
+											}
 											
 											$evento = explode('evento" VALUE="', $html_votacion);
 											$evento = explode('">', $evento[1]);
@@ -677,4 +711,21 @@ function tipo($string = "") {
 	}
 	
 	return $tipo;
+}
+
+function getMes($mes) {
+	switch($mes) {
+	   case 'Enero': return 1; break;
+	   case 'Febrero': return 2; break;
+	   case 'Marzo': return 3; break;
+	   case 'Abril': return 4; break;
+	   case 'Mayo': return 5; break;
+	   case 'Junio': return 6; break;
+	   case 'Julio': return 7; break;
+	   case 'Agosto': return 8; break;
+	   case 'Septiembre': return 9; break;
+	   case 'Octubre': return 10; break;
+	   case 'Noviembre': return 11; break;
+	   case 'Diciembre': return 12; break;
+	}
 }

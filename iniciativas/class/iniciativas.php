@@ -39,6 +39,10 @@ class Iniciativas {
 			unset($iniciativa["estatus"]);
 		}
 			
+		if($iniciativa["fecha_listado_tm"]        == "") unset($iniciativa["fecha_listado_tm"]);
+		if($iniciativa["fecha_votacion_tm"]       == "") unset($iniciativa["fecha_votacion_tm"]);
+		if($iniciativa["fecha_listado_header_tm"] == "") unset($iniciativa["fecha_listado_header_tm"]);
+		
 		#si no existe la guarda por primera
 		if($data == false) {
 			#La guarda pero con un id_parten 0
