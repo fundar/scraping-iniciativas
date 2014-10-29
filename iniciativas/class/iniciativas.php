@@ -256,6 +256,15 @@ class Iniciativas {
 				return 0;
 			}
 		} else {
+			$query = "select id_representative from representative_repeat where name='" . $value . "'";
+			$data  = $this->pgsql->query($query);
+			
+			if(is_array($data) and isset($data[0]["id_representative"])) {
+				return $data[0]["id_representative"];
+			} else {
+				return 0;
+			}
+			
 			return 0;
 		}
 	}
