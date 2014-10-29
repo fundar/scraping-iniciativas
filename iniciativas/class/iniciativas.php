@@ -115,9 +115,9 @@ class Iniciativas {
 						$relation["id_initiative"]      = $id_iniciativa;
 						$relation_save 		            = $this->save("initiative2political_party", $relation, "id_initiative");
 					}
-				} elseif(strpos($value, "Congreso") !== false or strpos($value, "Ejecutivo federal") !== false) {
+				} elseif(strpos($value, "Senadores") !== false or strpos($value, "Congreso") !== false or strpos($value, "Ejecutivo federal") !== false) {
 					$value         = trim($value);
-					$id_dependency = $this->getIDDependency(slug($value), $value);
+					$id_dependency = $this->getIDDependency(slug(utf8_encode($value)), $value);
 					
 					if($id_dependency != 0) {
 						$relation["id_dependency"] = $id_dependency;

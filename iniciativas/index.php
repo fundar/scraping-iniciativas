@@ -109,6 +109,8 @@ foreach($array_periodos as $periodo) {
 								
 								if(strpos($pre_envia, "Enviada") !== false or strpos($pre_envia, "Enviado") !== false) {
 									$iniciativa_array["enviada"] = $pre_envia;
+									
+									$iniciativa_array["presentada_array"] = array(utf8_decode("Cámara de Senadores"));
 								} 
 								
 								if(strpos($pre_envia, "Presentada") !== false) {
