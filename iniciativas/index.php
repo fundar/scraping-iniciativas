@@ -1,8 +1,6 @@
 #!/usr/bin/php -q
 
 <?php
-/*To-do*/
-
 echo "Hora y fecha actual de inicio: " . date("Y-m-d H:i:s") . "\n";
 echo "Iniciando scrapping .... esperar \n\n";
 
@@ -72,7 +70,7 @@ foreach($array_periodos as $periodo) {
 					$fecha_listado_header    = str_replace(" de ", " ", $fecha_array[0]);
 					$fecha_listado_header    = trim($fecha_listado_header);
 					$fecha_listado_header    = explode(" ", $fecha_listado_header);
-					$fecha_listado_header    = strtotime($fecha_listado_header[1] . '-' . getMes(ucfirst($fecha_listado_header[2])) . '-' . $fecha_listado_header[3]);
+					$fecha_listado_header    = strtotime($fecha_listado_header[1] . '-' . getMonth(ucfirst($fecha_listado_header[2])) . '-' . $fecha_listado_header[3]);
 					$iniciativa_array["fecha_listado_header_tm"] = date("Y-m-d H:i:s", $fecha_listado_header);
 					if($iniciativa_array["fecha_listado_header_tm"] == "") unset($iniciativa_array["fecha_listado_header_tm"]);
 				}
@@ -198,7 +196,7 @@ foreach($array_periodos as $periodo) {
 											
 											$fecha_listado    = str_replace(" de ", " ", $fecha);
 											$fecha_listado    = explode(" ", $fecha_listado);
-											$fecha_listado    = strtotime($fecha_listado[1] . '-' . getMes(ucfirst($fecha_listado[2])) . '-' . $fecha_listado[3]);
+											$fecha_listado    = strtotime($fecha_listado[1] . '-' . getMonth(ucfirst($fecha_listado[2])) . '-' . $fecha_listado[3]);
 											
 											$iniciativa_array["numero_iniciativa"] = $number;
 											$iniciativa_array["fecha_listado"]     = $fecha;
@@ -308,7 +306,7 @@ foreach($array_periodos as $periodo) {
 											} else {
 												$fecha_votacion    = str_replace(" de ", " ", $fecha_votacion);
 												$fecha_votacion    = explode(" ", $fecha_votacion);
-												$fecha_votacion    = strtotime($fecha_votacion[0] . '-' . getMes(ucfirst($fecha_votacion[1])) . '-' . $fecha_votacion[2]);
+												$fecha_votacion    = strtotime($fecha_votacion[0] . '-' . getMonth(ucfirst($fecha_votacion[1])) . '-' . $fecha_votacion[2]);
 												$iniciativa_array["fecha_votacion_tm"] = date("Y-m-d H:i:s", $fecha_votacion);
 												if($iniciativa_array["fecha_votacion_tm"] == "") unset($iniciativa_array["fecha_votacion_tm"]);
 											}
@@ -715,8 +713,8 @@ function tipo($string = "") {
 	return $tipo;
 }
 
-function getMes($mes) {
-	switch($mes) {
+function getMonth($month) {
+	switch($month) {
 	   case 'Enero': return 1; break;
 	   case 'Febrero': return 2; break;
 	   case 'Marzo': return 3; break;
