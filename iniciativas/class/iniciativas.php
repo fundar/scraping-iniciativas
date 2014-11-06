@@ -38,12 +38,13 @@ class Iniciativas {
 		if(isset($iniciativa["estatus"])) {
 			unset($iniciativa["estatus"]);
 		}
-			
+		
+		//si no hay fechas las eliminamos
 		if($iniciativa["fecha_listado_tm"]        == "") unset($iniciativa["fecha_listado_tm"]);
 		if($iniciativa["fecha_votacion_tm"]       == "") unset($iniciativa["fecha_votacion_tm"]);
 		if($iniciativa["fecha_listado_header_tm"] == "") unset($iniciativa["fecha_listado_header_tm"]);
 		
-		#si no existe la guarda por primera
+		#si no existe la guarda
 		if($data == false) {
 			#La guarda pero con un id_parten 0
 			$iniciativa["id_parent"] = 0;
@@ -350,7 +351,7 @@ class Iniciativas {
 		return $data;
 	}
 	
-	/*funcion para hacer un insert en un tabla, paramtros array y tabla*/
+	/*funcion para hacer un insert en un tabla, paramtros array, tabla e id que regresa*/
 	public function save($table, $data, $id_return) {
 		$fields = "";
 		$values = "";
