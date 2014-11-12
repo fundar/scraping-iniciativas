@@ -657,10 +657,11 @@ function pasos($contenido_html) {
 				"titulo"        => trim($titulo),
 				"titulo_limpio" => trim($titulo_limpio),
 				"tipo" 			=> tipo($titulo_limpio),
+				"slug" 			=> slug(utf8_encode(tipo($titulo_limpio))),
 				"votacion"      => esVotacion($titulo_limpio)
 			);
 		}
-		
+
 		return $pasos;
 	}
 	
