@@ -169,8 +169,8 @@ class Iniciativas {
 			foreach($estatus as $key => $value) {
 				#formo el query para los estatys
 				$query  = "insert into estatus_iniciativas_scrapper";
-				$fields = "(id_initiative, titulo, titulo_limpio, tipo, votacion) ";
-				$values = "(" . $id_iniciativa . ",'" . $value["titulo"] . "','" .  $value["titulo_limpio"] . "','" .  $value["tipo"] . "'," .  $value["votacion"] . ")";
+				$fields = "(id_initiative, titulo, titulo_limpio, tipo, slug, votacion) ";
+				$values = "(" . $id_iniciativa . ",'" . $value["titulo"] . "','" .  $value["titulo_limpio"] . "','" .  $value["tipo"] . "','" .  $value["slug"] . "'," .  $value["votacion"] . ")";
 				
 				#inserto el registro en la base de datos
 				$query    = utf8_encode($query . " " . $fields . " values " . $values);
