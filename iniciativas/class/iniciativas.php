@@ -337,7 +337,7 @@ class Iniciativas {
 	
 	/*comprueba si existe la iniciativa*/
 	public function isExists($iniciativa) {
-		$query = utf8_encode("select * from iniciativas_scrapper where titulo_listado='" . $iniciativa["titulo_listado"] . "' and id_parent=0");
+		$query = utf8_encode("select * from iniciativas_scrapper where titulo_listado2='" . $iniciativa["titulo_listado"] . "' and id_parent=0");
 		$data  = $this->pgsql->query($query);
 		
 		return $data;
@@ -345,7 +345,7 @@ class Iniciativas {
 	
 	/*comprueba si la iniciativa es igual [titulo y html]*/
 	public function isSame($iniciativa) {
-		$query = utf8_encode("select * from iniciativas_scrapper where titulo_listado='" . $iniciativa["titulo_listado"] . "' and html_listado='" . $iniciativa["html_listado"]  . "'");
+		$query = utf8_encode("select * from iniciativas_scrapper where titulo_listado2='" . $iniciativa["titulo_listado"] . "' and html_listado2='" . $iniciativa["html_listado"]  . "'");
 		$data = $this->pgsql->query($query);
 		
 		return $data;

@@ -157,11 +157,13 @@ foreach($array_periodos as $periodo) {
 							$titulo_listado = strip_tags($titulo_listado);
 							
 							#guardamos el html, titulo, perido y legislatura para futuras comparaciones
-							$iniciativa_array["titulo_listado"] = $titulo_listado;
-							$iniciativa_array["html_listado"]   = $iniciativa;
-							$iniciativa_array["periodo"]        = $periodo["periodo"];
-							$iniciativa_array["ano"]        	= $periodo["ano"];
-							$iniciativa_array["id_legislature"] = $id_legislatura;
+							$iniciativa_array["titulo_listado"]  = $titulo_listado;
+							$iniciativa_array["titulo_listado2"] = $titulo_listado;
+							$iniciativa_array["html_listado"]    = $iniciativa;
+							$iniciativa_array["html_listado2"]   = $iniciativa;
+							$iniciativa_array["periodo"]         = $periodo["periodo"];
+							$iniciativa_array["ano"]        	 = $periodo["ano"];
+							$iniciativa_array["id_legislature"]  = $id_legislatura;
 							
 							#comparamos si es identica e imprime el log
 							if(isSame($iniciativa_array, $IniciativasBD) == false) {
