@@ -655,15 +655,18 @@ function pasos($contenido_html) {
 			$titulo        = $paso;
 			$titulo_limpio = strip_tags($paso, '');
 			
-			$pasos[] = array(
-				"titulo"        => trim($titulo),
-				"titulo_limpio" => trim($titulo_limpio),
-				"tipo" 			=> tipo($titulo_limpio),
-				"slug" 			=> slug(utf8_encode(tipo($titulo_limpio))),
-				"votacion"      => esVotacion($titulo_limpio)
-			);
+			if(strpos($titulo_limpio, "Gaceta Parlamentaria") !== false) {
+			} else {
+				$pasos[] = array(
+					"titulo"        => trim($titulo),
+					"titulo_limpio" => trim($titulo_limpio),
+					"tipo" 			=> tipo($titulo_limpio),
+					"slug" 			=> slug(utf8_encode(tipo($titulo_limpio))),
+					"votacion"      => esVotacion($titulo_limpio)
+				);
+			}
 		}
-
+				
 		return $pasos;
 	}
 	
@@ -697,8 +700,6 @@ function tipo($string = "") {
 		$tipo = "Publicado";
 	} elseif(strpos($string, "Devuelta") !== false) {
 		$tipo = "Devuelta";
-	} elseif(strpos($string, "Gaceta Parlamentaria") !== false) {
-		$tipo = "Gaceta Parlamentaria";
 	} elseif(strpos($string, "Se le dispensaron") !== false) {
 		$tipo = utf8_decode("Se le dispensaron todos los trámites");
 	} elseif(strpos($string, "Aprobada") !== false) {
