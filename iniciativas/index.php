@@ -683,6 +683,7 @@ function esVotacion($string = "") {
 }
 
 /*obtiene el tipo de paso/estatus de la iniciativa*/
+//falta agregar al Ejecutivo federal "Pasa al Ejecutivo federal para los efectos constitucionales."
 function tipo($string = "") {
 	if(strpos($string, "Enviada") !== false or strpos($string, "Enviado") !== false) {
 		$tipo = "Enviada";
