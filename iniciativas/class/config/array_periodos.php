@@ -80,3 +80,8 @@ $array_periodos[] = array(
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a3primero.html",
 	"ano"     => "Tercer " . $ano
 );
+$array_periodos[] = array(
+	"periodo" => '1er. periodo Com. Permanente',
+	"url"     => "/Gaceta/Iniciativas/62/gp62_a3perma1.html",
+	"ano"     => "Tercer " . $ano
+);
