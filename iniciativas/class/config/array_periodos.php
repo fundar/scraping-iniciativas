@@ -89,5 +89,5 @@ $array_periodos[] = array(
 $array_periodos[] = array(
 	"periodo" => 'Segundo periodo ordinario',
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a3segundo.html",
-	"ano"     => "Segundo " . $ano
+	"ano"     => "Tercer " . $ano
 );
