@@ -85,3 +85,9 @@ $array_periodos[] = array(
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a3perma1.html",
 	"ano"     => "Tercer " . $ano
 );
+
+$array_periodos[] = array(
+	"periodo" => 'Segundo periodo ordinario',
+	"url"     => "/Gaceta/Iniciativas/62/gp62_a3segundo.html",
+	"ano"     => "Segundo " . $ano
+);
