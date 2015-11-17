@@ -91,3 +91,11 @@ $array_periodos[] = array(
 	"url"     => "/Gaceta/Iniciativas/62/gp62_a3segundo.html",
 	"ano"     => "Tercer " . $ano
 );
+
+
+/*Primer año 63 legislatura*/
+$array_periodos[] = array(
+	"periodo" => 'Primer periodo ordinario',
+	"url"     => "/Gaceta/Iniciativas/63/gp63_a1primero.html",
+	"ano"     => "Primer " . $ano
+);
