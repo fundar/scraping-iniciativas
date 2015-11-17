@@ -8,7 +8,7 @@ $ch      = curl_init();
 $baseurl = "http://gaceta.diputados.gob.mx";
 
 #ver la tabla de legislaturas del admin 1 = LXII
-$id_legislatura = 1; 
+$id_legislatura = 3; 
 
 #incluir array de periodos
 include_once "class/config/array_periodos.php";
